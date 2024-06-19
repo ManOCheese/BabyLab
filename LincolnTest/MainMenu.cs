@@ -53,7 +53,7 @@ namespace LincolnTest
         }
 
 
-        // Update counts 
+        // Update stimuli counts so we know if we can proceed
 
         private void settingsChanged(object sender, EventArgs e)
         {
@@ -68,7 +68,7 @@ namespace LincolnTest
         {
             string[] filters = new[] { "*.jpg", "*.png", "*.gif", "*.bmp" };
 
-            // Check default paths exist, create if not
+            // Check default paths exist
             if (Directory.Exists(Properties.Settings.Default.stimPathVisual))
             {
                 int stimCount = countFilesinFolder(Properties.Settings.Default.stimPathVisual, filters);
@@ -109,7 +109,7 @@ namespace LincolnTest
 
             // TODO: Add error message
         }
-
+        // Count files in any folder
         private int countFilesinFolder(string path, string[] types)
         {
             List<FileInfo> Files = new List<FileInfo>();
@@ -124,7 +124,7 @@ namespace LincolnTest
 
             return Files.Count;
         }
-
+        // See if we already have a project set
         private void checkProject()
         {
             if (Properties.Settings.Default.LastProject != "")
@@ -154,7 +154,7 @@ namespace LincolnTest
                 projectName.Text = "";
             }
         }
-
+        // Check to see if we can enable each button by looking for previously completed outputs
         private void countFiles(string path)
         {
             if (hasStimuliA && hasStimuliV)
@@ -206,7 +206,7 @@ namespace LincolnTest
             analyseWindow.FormClosed -= settingsChanged;
             analyseWindow.Show();
         }
-
+        // Drop down menu
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CommonOpenFileDialog myOpenDialog = new CommonOpenFileDialog();

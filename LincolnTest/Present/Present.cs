@@ -45,7 +45,7 @@ namespace LincolnTest
         List<string> tempAudioStims = new List<string>();
         List<string> tempAudioStimsCB = new List<string>();
 
-        // Basler Camera
+        // Basler Cameras
         BaslerCam camera;
         BaslerCam camera2;
         bool cameraHidden;
@@ -65,9 +65,12 @@ namespace LincolnTest
 
         private bool setupCameras()
         {
+            // TODO: Don't hard code the IP addresses
             camera = new BaslerCam("169.254.72.175");
             camera2 = new BaslerCam("169.254.78.175");
 
+            // If we have both cameras, set the camera path and name
+            // Camera name is the name of the trial, so we can load the correct video
             if (camera.found && camera2.found)
             {
                 string taskFileName = (string)expListBox.Text;
@@ -89,6 +92,7 @@ namespace LincolnTest
             return false;
         }
 
+        // Start the continuous shots on both cameras
         private void startCameras()
         {
             showCamButton.Enabled = false;
@@ -97,20 +101,19 @@ namespace LincolnTest
             camera.conShot();
             camera2.conShot();
 
+            // Timer to update the camera preview
             camPreviewTimer = new System.Timers.Timer(60);
 
             camPreviewTimer.Elapsed += cameraPreview;
             camPreviewTimer.AutoReset = true;
             camPreviewTimer.Enabled = true;
         }
-
+        // Populate the experiment list box with the .bex files in the experiment directory
         private void PopulateExpListBox()
         {
             DirectoryInfo dinfo = new DirectoryInfo(Properties.Settings.Default.ExpPath);
             FileInfo[] Files = dinfo.GetFiles("*.bex");
             expListBox.Items.Clear();
-
-            Console.WriteLine("Dir: " + Properties.Settings.Default.ExpPath);
 
             foreach (FileInfo file in Files)
             {
@@ -119,7 +122,7 @@ namespace LincolnTest
             }
             if (expListBox.Items.Count > 0)
             {
-                // expListBox.selec = 1;
+                // TODO: Maybe select the first item by default?
             }
         }
 
@@ -141,7 +144,7 @@ namespace LincolnTest
                 keyTextBox.AppendText(text);
             }
         }
-
+        // Refresh the block list box with the blocks in the selected experiment
         private void refreshBlockList()
         {
             // Clear current list
@@ -158,6 +161,7 @@ namespace LincolnTest
                 blockListBox.Items.Add(block);
             }
         }
+        // Refresh the trial list box with the trials in the selected block
         private void refresh_trialListBox()
         {
             // Clear current list
@@ -173,7 +177,7 @@ namespace LincolnTest
                 trialListBox.Items.Add(trial);
             }
         }
-
+        // Enable the start button if a trial is selected in the trial list box and disable it if not
         private void readyToStart()
         {
             if (trialListBox.SelectedItems.Count > 0)
@@ -185,7 +189,7 @@ namespace LincolnTest
                 startButton.Enabled = false;
             }
         }
-
+        // Start the experiment
         private void startButton_Click(object sender, EventArgs e)
         {
             if (trialListBox.SelectedItems.Count == 0) return;
@@ -195,8 +199,9 @@ namespace LincolnTest
                 startCameras();
             }            
 
-            previewTimer = new System.Timers.Timer(60);
+            
 
+            // Parent window is this window
             stimWindow.parentWindow = this;
             stimWindow.isAutoPlay = autoRunCheckBox.Checked;            
 
@@ -212,19 +217,22 @@ namespace LincolnTest
             stimWindow.Show();
             stimWindow.isShuffled = shuffleCheckBox.Checked;
 
+            // Update preview image
             StimWinPreview.Image = preview;
 
+            // Timer to update the preview image
+            previewTimer = new System.Timers.Timer(60);
             previewTimer.Elapsed += refreshPreview;
             previewTimer.AutoReset = true;
             previewTimer.Enabled = true;
 
+            // Start the cameras writing to video
             startButton.Enabled = false;
             camera.writing = true;
             camera2.writing = true;
         }
 
-        
-
+        // Update the experiment preview image
         private void refreshPreview(Object source, ElapsedEventArgs e)
         {
             if(stimWindow == null)
@@ -252,7 +260,7 @@ namespace LincolnTest
                 }
             }
         }
-
+        // Update the camera preview image
         private void cameraPreview(Object source, ElapsedEventArgs e)
         {
             if (this.InvokeRequired)
@@ -281,14 +289,13 @@ namespace LincolnTest
             }
         }
 
-
+        // Called when the stim window is closed
         public void stimWindowClosed()
         {
             
             stimWindow.Invoke((MethodInvoker)delegate
             {
                 // Hide the stim window and stop the cameras
-
                 this.startButton.Enabled = true;
                 stimWindow.Hide();
                 camera.Stop();
@@ -297,13 +304,7 @@ namespace LincolnTest
         }
 
 
-        private void trialListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            this.BeginInvoke((MethodInvoker)(
-            () => readyToStart()));
-        }
-
-
+        // TODO: Implement this check
         private bool checkStimulusFile(string stimulus)
         {
             if (stimulus == "") { return true; }
@@ -358,7 +359,7 @@ namespace LincolnTest
         {
 
         }
-
+        // Check if the camera is connected
         private void scanCamButton_Click(object sender, EventArgs e)
         {
             if (setupCameras())
@@ -372,8 +373,7 @@ namespace LincolnTest
             }
         }
 
-        // Lock the cursor so StimWindow doesn't lose focus
-
+        // TODO: Lock the cursor so StimWindow doesn't lose focus
         private void lockCursor(bool isLocked)
         {
             if (isLocked)

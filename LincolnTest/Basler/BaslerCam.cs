@@ -17,6 +17,9 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace LincolnTest
 {
+    /// <summary>
+    /// Represents a Basler camera.
+    /// </summary>
     internal class BaslerCam
     {
         private Camera camera;
@@ -25,10 +28,16 @@ namespace LincolnTest
 
         public IGrabResult grabResult;
 
+        // Keep track of the current frame
         private float currFrame = 0;
 
+        // Know if the camera is grabbing
         public bool grabbing;
+
+        // Know if the camera is supposed to be writing the images to a file
         public bool writing = false;
+
+        // Camera parameters
         public int axis_x;
         public int axis_y;
         public int axis_scale;
@@ -42,10 +51,15 @@ namespace LincolnTest
 
         public bool found = false;
 
+        // Bitmap to display the image, camera images need to be converted to bitmap
         public Bitmap bitmap;
 
         int count = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaslerCam"/> class.
+        /// </summary>
+        /// <param name="ip">The IP address of the camera.</param>
         public BaslerCam(string ip)
         {
             camip = ip;
@@ -71,6 +85,9 @@ namespace LincolnTest
 
         // Use a new thread for each camera
 
+        /// <summary>
+        /// Starts continuous shot.
+        /// </summary>
         public void conShot()
         {
             if (!grabbing)
@@ -105,13 +122,14 @@ namespace LincolnTest
 
                 camera.StreamGrabber.Start();
 
+                // Make sure the video is the correct size
                 var expected = new OpenCvSharp.Size(1280, 1024);
                 string filename = camPath + cam_name + ".mkv";
                 videoWriter.Open(filename, FourCC.H264, camera.Parameters[PLCamera.ResultingFrameRateAbs].GetValue(), expected, false);
 
                 videoWriter.Set(VideoWriterProperties.Quality, 95);
-                Debug.WriteLine("Video: " + videoWriter.FileName);
 
+                // Grab images from the camera
                 while (grabbing)
                 {
                     try
@@ -132,7 +150,7 @@ namespace LincolnTest
                             // convert image from BayerBG to RGB
                             Cv2.CvtColor(img, img, ColorConversionCodes.BayerBG2GRAY);
 
-                            // If 
+                            // Only write the image if the camera is supposed to be writing
                             if (writing)
                             {
                                 currFrame++;
@@ -143,13 +161,13 @@ namespace LincolnTest
                         }
                     }
                 }
-                
+
                 // Finish the grab stream: write the video file and close the camera
                 videoWriter.Release();
                 camera.Close();
                 Debug.WriteLine("Camera Shut");
 
-                if(currFrame < 10)
+                if (currFrame < 10)
                 {
                     Debug.WriteLine("Video < 10 frames");
                     File.Delete(filename);
@@ -159,11 +177,16 @@ namespace LincolnTest
             {
                 if (camera.IsOpen)
                     camera.Close();
-
+                // TODO: Custom error message
                 MessageBox.Show("Exception: {0}" + exception.Message);
             }
         }
 
+        /// <summary>
+        /// Converts an IImage to a Mat.
+        /// </summary>
+        /// <param name="grabResult"></param>
+        /// <returns></returns>
         private Mat convertIImage2Mat(IGrabResult grabResult)
         {
             converter.OutputPixelFormat = PixelType.BGR8packed;
@@ -171,18 +194,27 @@ namespace LincolnTest
             return new Mat(grabResult.Height, grabResult.Width, MatType.CV_8U, buffer);
         }
 
+        /// <summary>
+        /// Stops continuous shot.
+        /// </summary>
         public void Stop()
         {
             grabbing = false;
         }
 
-        
-
+        /// <summary>
+        /// Gets the current key frame.
+        /// </summary>
+        /// <returns>The current key frame.</returns>
         public float getKeyFrame()
         {
             return currFrame;
         }
 
+        /// <summary>
+        /// Gets the frame rate of the camera.
+        /// </summary>
+        /// <returns>The frame rate of the camera.</returns>
         public string GetFrameRate()
         {
             string frameRate = "Waiting...";

@@ -247,7 +247,6 @@
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 22);
             this.toolsToolStripMenuItem.Text = "&Tools";
-            this.toolsToolStripMenuItem.Click += new System.EventHandler(this.toolsToolStripMenuItem_Click);
             // 
             // checkExperimentToolStripMenuItem
             // 
@@ -287,7 +286,6 @@
             this.blockListBox.Size = new System.Drawing.Size(120, 173);
             this.blockListBox.TabIndex = 6;
             this.blockListBox.SelectedIndexChanged += new System.EventHandler(this.blockListBox_SelectedIndexChanged);
-            this.blockListBox.SelectedValueChanged += new System.EventHandler(this.blockListBox_SelectedValueChanged);
             // 
             // label3
             // 
@@ -324,7 +322,6 @@
             this.label4.Size = new System.Drawing.Size(51, 13);
             this.label4.TabIndex = 10;
             this.label4.Text = "Comment";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label5
             // 
@@ -850,7 +847,6 @@
             this.label11.Size = new System.Drawing.Size(75, 13);
             this.label11.TabIndex = 0;
             this.label11.Text = "Average looks";
-            this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
             // randOptButton
             // 

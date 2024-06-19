@@ -79,14 +79,14 @@ namespace LincolnTest
             String buttonColourString = colourButton.BackColor.ToArgb().ToString();
             return buttonColourString;
         }
-
+        // Custom clamp function
         public static int Clamp(int value, int min, int max)
         {
             return (value < min) ? min : (value > max) ? max : value;
         }
 
 
-        // Custom error message dialog
+        // Custom error message dialog box
         public void errorMessage(string message, string caption)
         {
             MessageBoxButtons buttons = MessageBoxButtons.OK;
@@ -128,7 +128,7 @@ namespace LincolnTest
         {
             SaveChanges();
         }
-
+        // Save changes to XML
         private void SaveChanges()
         {
             if (isLoading) return;
@@ -143,10 +143,6 @@ namespace LincolnTest
             }
         }
 
-        private void toolsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
 
         // Read BEX files from folder and list them
         private void PopulateListBox()
@@ -437,7 +433,7 @@ namespace LincolnTest
 
             mySettings.hasChanged = false;
         }
-
+        // TODO: Add this for more error checking - could be moved to XML class?
         private bool checkStimulusFile(string stimulus)
         {
             if (stimulus == "") { return false; }
@@ -460,10 +456,7 @@ namespace LincolnTest
 
         }
 
-        private void blockListBox_SelectedValueChanged(object sender, EventArgs e)
-        {
-        }
-
+        // TODO: Could add this back in, but it's not really needed as we save on every change
         private bool isSaved()
         {
             if (mySettings.hasChanged)
@@ -518,18 +511,14 @@ namespace LincolnTest
                 PopulateListBox();
             }
         }
-
+        // Save new title when the text box is edited
         private void titleBox_TextChanged(object sender, EventArgs e)
         {
             blockInfo.blockName = titleBox.Text;
             SaveChanges();
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        // TODO: Can remove the save button as long as the autosave works
         private void saveButton_Click(object sender, EventArgs e)
         {
             if (true)
@@ -541,7 +530,7 @@ namespace LincolnTest
                 //
             }
         }
-
+        // Gets XML class to add a new block
         private void addBlock_Click(object sender, EventArgs e)
         {
             if (selectedBlock != null)
@@ -569,7 +558,7 @@ namespace LincolnTest
 
             stimDataGrid.Enabled = false;
         }
-
+        // Opens colour picker dialog
         private void changeColourButton_Click(object sender, EventArgs e)
         {
             ColorDialog MyDialog = new ColorDialog();
@@ -591,11 +580,7 @@ namespace LincolnTest
 
 
 
-        private void label11_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        // Gets XML class to add a new trial
         private void addTrialButton_Click(object sender, EventArgs e)
         {
             if (trialTitleBox.Text != "")
@@ -636,7 +621,7 @@ namespace LincolnTest
 
         // 
         //
-        // Collapsed section - Handle form changes: set changes in to array
+        // Many below: Handle form changes: set changes in to array
         //
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -802,7 +787,7 @@ namespace LincolnTest
         {
 
         }
-
+        // Updates the stimulus list from the data grid
         private void updateStimList()
         {
             tempStimsL.Clear();
@@ -852,7 +837,7 @@ namespace LincolnTest
             }
         }
 
-        // USe mouse to move images
+        // Use mouse to move images TODO: remove this
         private void stimPanel_MouseMove(object sender, MouseEventArgs e)
         {
             if (mousePrevDown)
@@ -971,7 +956,7 @@ namespace LincolnTest
         {
 
         }
-
+        // Save on close
         private void Create_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (trialListBox.Items.Count == 0) { return; }
@@ -994,7 +979,7 @@ namespace LincolnTest
         {
             updateImagePreview(e.RowIndex);
         }
-
+        // Show the images in the preview window based on the row index of the data table
         private void updateImagePreview(int index)
         {
             if (index >= 0)
@@ -1087,7 +1072,7 @@ namespace LincolnTest
 
 
         //  Counter balance the trial list. Creates 3 new lists with columns swapped
-
+        // TODO: Move to XML class, maybe
         private void cbButton_Click(object sender, EventArgs e)
         {
             TrialInfo CBTrialInfo = new TrialInfo();
