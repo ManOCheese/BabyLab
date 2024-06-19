@@ -7,13 +7,15 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Data;
+using System.Windows.Documents;
+using System.Diagnostics;
 
 namespace LincolnTest
 {
     public class BlockInfo
     {
         public string type { get; set; }
-        public string title { get; set; }
+        public string blockName { get; set; }
         public string comment { get; set; }
         public string vOnset { get; set; }
         public string aOnset { get; set; }
@@ -46,27 +48,31 @@ namespace LincolnTest
     public class TrialInfo
     {
         public string filePath { get; set; }
-        public string title { get; set; }
-        public string Code { get; set; }
+        public string partCode { get; set; }
+        public string partDOB { get; set; }
+        public string partGender { get; set; }
         public string audioStimulus { get; set; }
         public string audioStimulusSide { get; set; }
         public string stimulusList { get; set; }
         public string stimulusListRight { get; set; }
-        public string stimulusPosList { get; set; }
-        public string stimulusRPosList { get; set; }
+        public bool isPresented { get; set; }
+        public bool isScored { get; set; }
     }
 
 
     
     class CreateXML
     {
-        XmlDocument doc = new XmlDocument();
-
         string currFileName;
         List<string> blockList;
 
+        // Parts of the currently loaded file
+        XmlDocument doc = new XmlDocument();
+        XmlNode root;
+        XmlNodeList trialsRead;
+        XmlNodeList blocksRead;
 
-        // Create an basic BEX File
+        // Create a basic BEX File
         public bool CreateXMLDoc(string filename)
         {
             using (XmlWriter writer = XmlWriter.Create(Properties.Settings.Default.ExpPath + @"\" + filename))
@@ -100,12 +106,12 @@ namespace LincolnTest
         {
 
             XmlNode root = doc.DocumentElement;
-            XmlNodeList nodeList = root.SelectNodes("descendant::Block[title='" + blockInfo.title + "']");
+            XmlNodeList nodeList = root.SelectNodes("descendant::Block[blockName='" + blockInfo.blockName + "']");
 
             while (nodeList.Count >= 1)
             {
-                blockInfo.title = blockInfo.title + "_1";
-                nodeList = root.SelectNodes("descendant::Block[title='" + blockInfo.title + "']");
+                blockInfo.blockName = blockInfo.blockName + "_1";
+                nodeList = root.SelectNodes("descendant::Block[blockName='" + blockInfo.blockName + "']");
             }
 
             XmlElement element1 = doc.CreateElement(string.Empty, "Block", string.Empty);
@@ -138,32 +144,31 @@ namespace LincolnTest
             doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
 
             return true;
-
         }
 
        
 
         //Update existing block
 
-        public bool updateBlock(XmlNode block, BlockInfo blockInfo)
+        public bool updateBlock(int blockNum, BlockInfo blockInfo)
         {
+            XmlElement blockElement = (XmlElement)blocksRead[blockNum];
 
-            XmlNode root = doc.DocumentElement;
-            XmlElement blockElement = (XmlElement)block;
 
-            Console.WriteLine("Saving: " + blockElement["title"].InnerText + " with block: " + blockInfo.title);
 
-            if (blockElement["title"].InnerText != blockInfo.title)
+            Console.WriteLine("Saving: " + blockElement["blockName"].InnerText + " with block: " + blockInfo.blockName);
+
+            if (blockElement["blockName"].InnerText != blockInfo.blockName)
             {
                 // If we updated the block name, update the trials
-                XmlNodeList trialList = root.SelectNodes("descendant::Trial[Block='" + blockElement["title"].InnerText + "']");
+                XmlNodeList trialList = root.SelectNodes("descendant::Trial[Block='" + blockElement["partCode"].InnerText + "']");
                 for (int i = 0; i < trialList.Count; i++)
                 {
                     XmlElement trialElement = (XmlElement)trialList[i];
                     XmlNodeList titleList = trialElement.SelectNodes("Block");
                     for (int x = 0; x < titleList.Count; x++)
                     {
-                        titleList[x].InnerText = blockInfo.title;
+                        titleList[x].InnerText = blockInfo.blockName;
                     }
                 }
 
@@ -176,7 +181,7 @@ namespace LincolnTest
                     var valueOfField = propertyinfo.GetValue(blockInfo);
                     if (valueOfField == null)
                     {
-                        MessageBox.Show("Some text", "Some title", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Some text", "Some partCode", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     }
                     var fieldname = propertyinfo.Name;
@@ -191,11 +196,7 @@ namespace LincolnTest
             return true;
         }
 
-        public List<string> getBlockList()
-        {
-
-            return blockList;
-        }
+        
 
 
         // For fixing bad files and updating existing ones if we add more options
@@ -210,28 +211,28 @@ namespace LincolnTest
             doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
         }
 
-        public bool updateTrial(XmlNode trial, TrialInfo trialInfo)
+        public bool updateTrial(int trialNum, TrialInfo trialInfo)
         {
-            XmlElement trialElement = (XmlElement)trial;
+            XmlElement trialElement = (XmlElement)trialsRead[trialNum];
 
-            Console.WriteLine("Saving: " + trialElement["Title"].InnerText + " with trial: " + trialInfo.title + " with Stims: " + trialInfo.stimulusList.ToString()) ;
+            Console.WriteLine("Saving: " + trialElement["partCode"].InnerText + " with trial: " + trialInfo.partCode + " with Stims: " + trialInfo.stimulusList.ToString()) ;
             bool noNodes = false;
 
-            trialElement["Title"].InnerText = trialInfo.title;
-            
+            trialElement["partCode"].InnerText = trialInfo.partCode;
+            trialElement["isScored"].InnerText = trialInfo.isScored.ToString().ToLower();
+            trialElement["isPresented"].InnerText = trialInfo.isPresented.ToString().ToLower();
+
             if (trialInfo.stimulusList != "")
             {
                 string[] stims = trialInfo.stimulusList.ToString().Split(',');
                 string[] stimsR = trialInfo.stimulusListRight.ToString().Split(',');
                 string[] audioStims = trialInfo.audioStimulus.ToString().Split(',');
-                string[] audioStimsCB = trialInfo.audioStimulusSide.ToString().Split(',');
-                string[] positions = trialInfo.stimulusPosList.Split(':');
-                string[] positionsR = trialInfo.stimulusRPosList.Split(':');
+                string[] audioStimsSide = trialInfo.audioStimulusSide.ToString().Split(',');
 
                 int index = 0;
 
                 try {
-                    trial.SelectNodes("VisualStimuli");
+                    trialsRead[trialNum].SelectNodes("VisualStimuli");
                 }
                 catch
                 {
@@ -240,7 +241,7 @@ namespace LincolnTest
 
                 if (!noNodes)
                 {
-                    XmlNodeList nodes = trial.SelectNodes("VisualStimuli");
+                    XmlNodeList nodes = trialsRead[trialNum].SelectNodes("VisualStimuli");
                     for (int i = nodes.Count - 1; i >= 0; i--)
                     {
                         nodes[i].ParentNode.RemoveChild(nodes[i]);
@@ -253,11 +254,10 @@ namespace LincolnTest
                     XmlText text1 = doc.CreateTextNode(stim);
                     stimNode.AppendChild(text1);
                     trialElement.AppendChild(stimNode);
-                    stimNode.SetAttribute("Pos", positions[index]);
-                    stimNode.SetAttribute("RPos", positionsR[index]);
                     stimNode.SetAttribute("RightImage", stimsR[index]);
                     stimNode.SetAttribute("audioStimulus", audioStims[index]);
-                    stimNode.SetAttribute("audioStimulusCB", audioStimsCB[index]);
+                    stimNode.SetAttribute("audioStimulusCB", audioStimsSide[index]);
+                    stimNode.SetAttribute("partDOB", trialInfo.partDOB);
                     index++;
                 }
 
@@ -277,30 +277,46 @@ namespace LincolnTest
         public bool addTrial(BlockInfo blockInfo, string trialName)
         {
             XmlNode root = doc.DocumentElement;
-            XmlNodeList nodeList = root.SelectNodes("descendant::Trial[Block='" + blockInfo.title + "']");
-
-            
-
+            XmlNodeList nodeList = root.SelectNodes("descendant::Trial[Block='" + blockInfo.blockName + "']");
 
             XmlElement element1 = doc.CreateElement(string.Empty, "Trial", string.Empty);
 
-            XmlElement element2 = doc.CreateElement(string.Empty, "Title", string.Empty);
-            XmlText text1 = doc.CreateTextNode(trialName);
-            element2.AppendChild(text1);
+            XmlElement element2 = doc.CreateElement(string.Empty, "partCode", string.Empty);
+            XmlText text2 = doc.CreateTextNode(trialName);
+            element2.AppendChild(text2);
             element1.AppendChild(element2);
 
             XmlElement element3 = doc.CreateElement(string.Empty, "Block", string.Empty);
-            XmlText text2 = doc.CreateTextNode(blockInfo.title);
-            element3.AppendChild(text2);
+            XmlText text3 = doc.CreateTextNode(blockInfo.blockName);
+            element3.AppendChild(text3);
             element1.AppendChild(element3);
 
-            XmlElement element7 = doc.CreateElement(string.Empty, "TrialsEnd", string.Empty);
-            XmlText text6 = doc.CreateTextNode("max");
-            element7.AppendChild(text6);
-            element1.AppendChild(element7);
+            XmlElement element4 = doc.CreateElement(string.Empty, "TrialsEnd", string.Empty);
+            XmlText text4 = doc.CreateTextNode("max");
+            element4.AppendChild(text4);
+            element1.AppendChild(element4);
+
+            XmlElement element5 = doc.CreateElement(string.Empty, "isScored", string.Empty);
+            XmlText text5 = doc.CreateTextNode("false");
+            element5.AppendChild(text5);
+            element1.AppendChild(element5);
+
+            XmlElement element6 = doc.CreateElement(string.Empty, "isPresented", string.Empty);
+            XmlText text6 = doc.CreateTextNode("false");
+            element6.AppendChild(text6);
+            element1.AppendChild(element6);
 
             doc.DocumentElement.AppendChild(element1);
             doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
+            return true;
+        }
+
+        public bool removeTrial(int selectedTrial)
+        {
+
+            trialsRead[selectedTrial].RemoveAll();
+
+            
             return true;
         }
 
@@ -308,13 +324,13 @@ namespace LincolnTest
         public bool addDefaultBlock(string title, string type)
         {
             BlockInfo blockInfo = new BlockInfo();
-            blockInfo.title = title;
+            blockInfo.blockName = title;
             blockInfo.type = type;
             blockInfo.comment = "Default block";
             blockInfo.vOnset = "0";
             blockInfo.aOnset = "0";
-            blockInfo.maxTrialDuration = "400";
-            blockInfo.bgColour = "-16777216";
+            blockInfo.maxTrialDuration = "6000";
+            blockInfo.bgColour = "-8355712";
             blockInfo.trialEndsWhen = "1";
             blockInfo.showThumbs = "False";
             blockInfo.showStimInfo = "False";
@@ -365,5 +381,131 @@ namespace LincolnTest
             doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
 
         }
+
+        // Load a file and return a list of block: Used to update lists in various windows
+        public List<string> getBlockList(string fileName)
+        {
+            List<string> blockList = new List<string>();
+
+            try
+            {
+                doc.Load(Properties.Settings.Default.ExpPath + @"\" + fileName);
+            }
+            catch
+            {
+                return blockList;
+            }
+
+            root = doc.DocumentElement;
+
+            if (root.HasChildNodes)
+            {
+                XmlNode first = root.NextSibling;
+
+                blocksRead = root.SelectNodes("Block");
+
+                for (int i = 0; i < blocksRead.Count; i++)
+                {
+                    // blockListBox.Items.Add(blockList[i].FirstChild.InnerXml);
+                    XmlElement node = (XmlElement)blocksRead[i];
+                    blockList.Add(node["blockName"].InnerText);
+                }
+            }
+            return blockList;
+        }
+
+        public List<string> getTrialList(string fileName, string blockName)
+        {
+            currFileName = fileName;
+
+            List<string> trialList = new List<string>();
+
+            trialsRead = root.SelectNodes("descendant::Trial[Block='" + blockName + "']");
+            for (int i = 0; i < trialsRead.Count; i++)
+            {
+                trialList.Add(trialsRead[i].FirstChild.InnerXml);
+            }
+
+            return trialList;
+
+        }
+
+        public TrialInfo getTrialInfo(int trialNum) { 
+        
+            TrialInfo trialInfo = new TrialInfo();
+
+            Debug.WriteLine(trialsRead[trialNum].InnerText);
+            
+            XmlElement selectedTrial = (XmlElement)trialsRead[trialNum];
+
+            trialInfo.partCode = selectedTrial["partCode"].InnerText;
+
+            List<string> tempStimsL = new List<string>();
+            List<string> tempStimsR = new List<string>();
+            List<string> tempAudioStims = new List<string>();
+            List<string> tempAudioStimSide = new List<string>();
+
+            XmlNodeList stims = selectedTrial.SelectNodes("VisualStimuli");
+            for (int i = stims.Count - 1; i >= 0; i--)
+            {
+                    tempStimsL.Add(stims[i].InnerText);
+                    tempStimsR.Add(stims[i].Attributes["RightImage"].Value);
+                    tempAudioStims.Add(stims[i].Attributes["audioStimulus"].Value);
+                    tempAudioStimSide.Add(stims[i].Attributes["audioStimulusCB"].Value);
+            }
+
+            // Reverse order, because .Add adds at the beginning
+            tempStimsL.Reverse();
+            tempStimsR.Reverse();
+            tempAudioStims.Reverse();
+            tempAudioStimSide.Reverse();
+
+            trialInfo.stimulusList = string.Join(",", tempStimsL);
+            trialInfo.stimulusListRight = string.Join(",", tempStimsR);
+            trialInfo.audioStimulus = string.Join(",", tempAudioStims);
+            trialInfo.audioStimulusSide = string.Join(",", tempAudioStimSide);
+
+            trialInfo.isPresented = selectedTrial["isPresented"].InnerText == "true";
+            trialInfo.isScored = selectedTrial["isScored"].InnerText == "true";
+
+            return trialInfo;
+            
+        }
+
+        public BlockInfo getBlockInfo(int blockNum)
+        {
+            BlockInfo blockInfo = new BlockInfo();
+
+            XmlElement blockElement = (XmlElement)blocksRead[blockNum];
+            blockInfo.blockName = blockElement["blockName"].InnerText;
+
+            foreach (PropertyInfo propertyinfo in typeof(BlockInfo).GetProperties())
+            {
+                if (propertyinfo != null)
+                {
+                    var valueOfField = propertyinfo.GetValue(blockInfo);
+                    var fieldname = propertyinfo.Name;
+
+
+                    if (blockElement.SelectNodes(fieldname).Count > 0)
+                    {
+                        propertyinfo.SetValue(blockInfo, blockElement[fieldname].InnerText);
+                        Console.WriteLine(fieldname + "  with value  " + valueOfField + "  loaded.");
+                    }
+                    else
+                    {
+                        addMissingNode(blockElement, fieldname, "0");
+                        // errorMessage("Unable to read " + fieldname + " from file", "File repaired and setting to default");
+                        propertyinfo.SetValue(blockInfo, "0");
+                        // blockInfo[blockindex].hcWindow = "0";
+                    }
+                }
+            }
+
+
+
+            return blockInfo;
+        }
+
     }
 }

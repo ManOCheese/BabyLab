@@ -2,29 +2,23 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="LincolnTest.Properties" GeneratedClassName="PresentKB">
   <Profiles />
   <Settings>
-    <Setting Name="Next" Type="System.String" Scope="User">
+    <Setting Name="NextTrial" Type="System.String" Scope="User">
       <Value Profile="(Default)">N</Value>
     </Setting>
-    <Setting Name="Previous" Type="System.String" Scope="User">
+    <Setting Name="PreviousTrial" Type="System.String" Scope="User">
       <Value Profile="(Default)">B</Value>
     </Setting>
-    <Setting Name="Start" Type="System.String" Scope="User">
+    <Setting Name="TrialStart" Type="System.String" Scope="User">
       <Value Profile="(Default)">S</Value>
     </Setting>
-    <Setting Name="End" Type="System.String" Scope="User">
+    <Setting Name="EndTrial" Type="System.String" Scope="User">
       <Value Profile="(Default)">Escape</Value>
     </Setting>
-    <Setting Name="ShowAttend" Type="System.String" Scope="User">
+    <Setting Name="AttentionImage" Type="System.String" Scope="User">
       <Value Profile="(Default)">A</Value>
     </Setting>
-    <Setting Name="PlayAttend" Type="System.String" Scope="User">
+    <Setting Name="AttentionSound" Type="System.String" Scope="User">
       <Value Profile="(Default)">Q</Value>
-    </Setting>
-    <Setting Name="Left" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Left</Value>
-    </Setting>
-    <Setting Name="Right" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Right</Value>
     </Setting>
     <Setting Name="AutoPlay" Type="System.String" Scope="User">
       <Value Profile="(Default)">P</Value>

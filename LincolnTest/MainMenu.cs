@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using static System.Net.WebRequestMethods;
 
 namespace LincolnTest
 {
@@ -16,7 +18,8 @@ namespace LincolnTest
         MainPrefs PrefsWindow = new MainPrefs();
         string projPath;
 
-        bool hasStimuli = false;
+        bool hasStimuliV = false;
+        bool hasStimuliA = false;
 
         public MainMenu()
         {
@@ -30,12 +33,14 @@ namespace LincolnTest
         private void button1_Click(object sender, EventArgs e)
         {
             Create CreateWindow = new Create();
+            CreateWindow.FormClosed += settingsChanged;
             CreateWindow.Show();
         }
 
         private void PresentButton_Click(object sender, EventArgs e)
         {
             Present PresentWindow = new Present();
+            PresentWindow.FormClosed += settingsChanged;
             PresentWindow.ShowDialog();
         }
 
@@ -43,51 +48,88 @@ namespace LincolnTest
         {
             if (PrefsWindow.ShowDialog() == DialogResult.OK)
             {
-                
+
             };
         }
 
+
+        // Update counts 
+
         private void settingsChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.stimPath = PrefsWindow.stimPath;
+            Properties.Settings.Default.stimPathVisual = PrefsWindow.stimPathVisual;
+            Properties.Settings.Default.stimPathAudio = PrefsWindow.stimPathAudio;
+            Properties.Settings.Default.Save();
             checkFolders();
             checkProject();
         }
 
         private void checkFolders()
         {
-            if (!Properties.Settings.Default.createPaths)
-            {
-                return;
-            }
+            string[] filters = new[] { "*.jpg", "*.png", "*.gif", "*.bmp" };
 
             // Check default paths exist, create if not
-            if (!Directory.Exists(Properties.Settings.Default.stimPath))
+            if (Directory.Exists(Properties.Settings.Default.stimPathVisual))
             {
-                return;
-            }
-
-            if (Properties.Settings.Default.stimPath != "" && Properties.Settings.Default.stimPath != null)
-            {
-                // Check default paths exist, create if not
-                if (!Directory.Exists(Properties.Settings.Default.stimPath))
+                int stimCount = countFilesinFolder(Properties.Settings.Default.stimPathVisual, filters);
+                
+                if (stimCount > 0)
                 {
-                    return;
+                    stimCountV.Text = stimCount.ToString();
+                    hasStimuliV = true;
                 }
-
-                if (Directory.GetFiles(Properties.Settings.Default.stimPath, "*.jpg").Length > 0)
+                else
                 {
-                    hasStimuli = true;
-                    errorMessage.Visible = false;
+                    stimCountV.Text = "Stim folder empty";
                 }
             }
+            else
+            {
+                stimCountV.Text = "Stim folder empty";
+            }
+
+            if (Directory.Exists(Properties.Settings.Default.stimPathAudio))
+            {
+                int audioCount = countFilesinFolder(Properties.Settings.Default.stimPathAudio, filters);
+
+                if (audioCount > 0)
+                {
+                    hasStimuliA = true;
+                    stimCountA.Text = audioCount.ToString();
+                }
+                else
+                {
+                    stimCountA.Text = "Stim folder empty";
+                }
+            }
+            else
+            {
+                stimCountA.Text = "Stim folder missing";
+            }
+
+            // TODO: Add error message
+        }
+
+        private int countFilesinFolder(string path, string[] types)
+        {
+            List<FileInfo> Files = new List<FileInfo>();
+            DirectoryInfo dvstiminfo = new DirectoryInfo(path);
+
+            // Check stim folder and count files
+            foreach (String ext in types)
+            {
+                FileInfo[] TempFiles = dvstiminfo.GetFiles(ext);
+                Files.AddRange(TempFiles);
+            }
+
+            return Files.Count;
         }
 
         private void checkProject()
         {
-            if(Properties.Settings.Default.LastProject != "")
+            if (Properties.Settings.Default.LastProject != "")
             {
-                if (!File.Exists(Properties.Settings.Default.LastProject + "/project.ini"))
+                if (!System.IO.File.Exists(Properties.Settings.Default.LastProject + "/project.ini"))
                 {
                     // error;
                     projectName.Text = "No project set";
@@ -96,11 +138,14 @@ namespace LincolnTest
                 {
                     string path = Properties.Settings.Default.LastProject.TrimEnd(Path.DirectorySeparatorChar);
                     Properties.Settings.Default.ExpPath = path;
+                    Properties.Settings.Default.Save();
 
                     var MyIni = new IniFile(Properties.Settings.Default.ExpPath + "/project.ini");
                     var ProjectName = MyIni.Read("ProjectName");
+
+                    directoryLabel.Text = Properties.Settings.Default.ExpPath;
                     projectName.Text = ProjectName;
-                                 
+
                     countFiles(path);
                 }
             }
@@ -112,83 +157,107 @@ namespace LincolnTest
 
         private void countFiles(string path)
         {
-            if (hasStimuli)
+            if (hasStimuliA && hasStimuliV)
             {
                 createButton.Enabled = true;
             }
             else
             {
-                errorMessage.Visible = true;
+                stimCountText.Visible = true;
             }
 
-            int fCount = Directory.GetFiles(path, "*.bex", SearchOption.TopDirectoryOnly).Length;
+            int fCount = Directory.GetFiles(path, "*.bex", SearchOption.AllDirectories).Length;
             experimentCount.Text = fCount.ToString();
 
-            if(fCount > 0 && hasStimuli == true)
+            if (fCount > 0 && hasStimuliA && hasStimuliV == true)
             {
                 presentButton.Enabled = true;
             }
 
-            fCount = Directory.GetFiles(path + @"\output" , "*.out", SearchOption.TopDirectoryOnly).Length;
+            fCount = Directory.GetFiles(path + @"\output", "*.out", SearchOption.AllDirectories).Length;
             presentCount.Text = fCount.ToString();
 
-            if (fCount > 0 && hasStimuli)
+            if (fCount > 0 && hasStimuliA && hasStimuliV)
             {
                 scoreButton.Enabled = true;
+            }
+
+            Directory.CreateDirectory(path + @"\output\scored");
+            fCount = Directory.GetFiles(path + @"\output\scored", "*.csv", SearchOption.AllDirectories).Length;
+            scoredCountText.Text = fCount.ToString();
+
+            if (fCount > 0)
+            {
+                analyseButton.Enabled = true;
             }
 
 
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            Score scoreWindow = new Score();
+            ScoreOCV scoreWindow = new ScoreOCV();
+            scoreWindow.FormClosed -= settingsChanged;
             scoreWindow.Show();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Analyse analyseWindow = new Analyse();
+            DataWindow analyseWindow = new DataWindow();
+            analyseWindow.FormClosed -= settingsChanged;
             analyseWindow.Show();
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog myOpenDialog = new FolderBrowserDialog();
+            CommonOpenFileDialog myOpenDialog = new CommonOpenFileDialog();
             PlainTextInput nameDialog = new PlainTextInput();
+
+            myOpenDialog.IsFolderPicker = true;
 
             // myOpenDialog.RootFolder = Environment.SpecialFolder.MyDocuments;
 
-            if (myOpenDialog.ShowDialog() == DialogResult.OK)
+            if (myOpenDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                projectName.Text = myOpenDialog.SelectedPath;
-                Properties.Settings.Default.ExpPath = myOpenDialog.SelectedPath;
-                Properties.Settings.Default.LastProject = myOpenDialog.SelectedPath;
+                projectName.Text = myOpenDialog.FileName;
+                Properties.Settings.Default.ExpPath = myOpenDialog.FileName;
+                Properties.Settings.Default.LastProject = myOpenDialog.FileName;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                return;
             }
 
             nameDialog.setText("Set Project Name", "Project Name:");
-            
+            directoryLabel.Text = myOpenDialog.FileName;
+
             if (nameDialog.ShowDialog() == DialogResult.OK)
             {
                 var MyIni = new IniFile(Properties.Settings.Default.ExpPath + "/project.ini");
                 MyIni.Write("ProjectName", nameDialog.pname);
-                Directory.CreateDirectory(Properties.Settings.Default.ExpPath + "/Output"); 
+                Directory.CreateDirectory(Properties.Settings.Default.ExpPath + "/Output");
                 checkProject();
             }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog myOpenDialog = new FolderBrowserDialog();
-
+            CommonOpenFileDialog myOpenDialog = new CommonOpenFileDialog();
+            myOpenDialog.IsFolderPicker = true;
             // myOpenDialog.RootFolder = Environment.SpecialFolder.MyDocuments;
 
-            if (myOpenDialog.ShowDialog() == DialogResult.OK)
+            if (myOpenDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                projectName.Text = myOpenDialog.SelectedPath;
-                Properties.Settings.Default.ExpPath = myOpenDialog.SelectedPath;
-                Properties.Settings.Default.LastProject = myOpenDialog.SelectedPath;
+                projectName.Text = myOpenDialog.FileName;
+                Properties.Settings.Default.ExpPath = myOpenDialog.FileName;
+                Properties.Settings.Default.LastProject = myOpenDialog.FileName;
                 checkProject();
             }
+        }
+
+        private void MainMenu_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

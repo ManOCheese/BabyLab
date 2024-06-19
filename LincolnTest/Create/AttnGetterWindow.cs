@@ -27,7 +27,11 @@ namespace LincolnTest
 
         private void AttnGetterWindow_Load(object sender, EventArgs e)
         {
-
+            Tuple<string, string> attn = parentWindow.getAttn();
+            attnVisLocation = attn.Item1;
+            attnAudioLocation = attn.Item2;
+            attnVisFIleText.Text = attnVisLocation;
+            attnAudioFIleText.Text += attnAudioLocation;
         }
 
         private void AttnGetterWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -41,11 +45,12 @@ namespace LincolnTest
             string[] filters = new[] { "*.jpg", "*.png", "*.gif", "*.bmp" };
             openImageFileDialog.RestoreDirectory = true;
             openImageFileDialog.InitialDirectory = Properties.Settings.Default.ExpPath + @".\stimuli";
-            openImageFileDialog.Filter = "Images(*.BMP; *.JPG; *.GIF,*.PNG,*.TIFF)| *.BMP; *.JPG; *.GIF; *.PNG; *.TIFF ";
+            openImageFileDialog.Filter = "Images(*.BMP; *.JPG; *.GIF,*.PNG,*.TIFF)| *.BMP; *.JPG; *.GIF; *.PNG; *.TIFF";
             DialogResult dr = openImageFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 attnVisLocation = openImageFileDialog.FileName;
+                attnVisFIleText.Text = openImageFileDialog.FileName;
             }
         }
 
@@ -58,6 +63,7 @@ namespace LincolnTest
             if (dr == DialogResult.OK)
             {
                 attnAudioLocation = openAudioFileDialog.FileName;
+                attnAudioFIleText.Text= openAudioFileDialog.FileName;
             }
         }
     }

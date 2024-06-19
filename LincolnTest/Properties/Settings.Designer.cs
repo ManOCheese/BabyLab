@@ -12,7 +12,7 @@ namespace LincolnTest.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.8.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace LincolnTest.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("c:\\testproject\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ExpPath {
             get {
                 return ((string)(this["ExpPath"]));
@@ -73,7 +73,7 @@ namespace LincolnTest.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("c:\\testproject\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string LastProject {
             get {
                 return ((string)(this["LastProject"]));
@@ -86,12 +86,36 @@ namespace LincolnTest.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string stimPath {
+        public string stimPathVisual {
             get {
-                return ((string)(this["stimPath"]));
+                return ((string)(this["stimPathVisual"]));
             }
             set {
-                this["stimPath"] = value;
+                this["stimPathVisual"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string stimPathAudio {
+            get {
+                return ((string)(this["stimPathAudio"]));
+            }
+            set {
+                this["stimPathAudio"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string stimulusDisplay {
+            get {
+                return ((string)(this["stimulusDisplay"]));
+            }
+            set {
+                this["stimulusDisplay"] = value;
             }
         }
     }

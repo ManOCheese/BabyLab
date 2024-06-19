@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ExpPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">c:\testproject\</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="createPaths" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -15,10 +15,16 @@
       <Value Profile="(Default)">N</Value>
     </Setting>
     <Setting Name="LastProject" Type="System.String" Scope="User">
-      <Value Profile="(Default)">c:\testproject\</Value>
-    </Setting>
-    <Setting Name="stimPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="stimPathVisual" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="stimPathAudio" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="stimulusDisplay" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

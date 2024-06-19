@@ -315,6 +315,7 @@ namespace LincolnTest
             {
                 _mp.Time = _mp.Time - (int)myMS;
                 _mp2.Time = _mp.Time - (int)myMS;
+                
             }
         }
 
@@ -345,7 +346,7 @@ namespace LincolnTest
             // label1.Text = _mp.Time.ToString();
             updateTime(_mp.Time.ToString());
             updateTimeline(_mp.Time.ToString());
-            myMS = 1000 / _mp.Fps;
+            myMS = 1 / _mp.Fps;
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)

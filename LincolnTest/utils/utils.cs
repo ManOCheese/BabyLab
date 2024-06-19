@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -58,20 +59,21 @@ namespace LincolnTest
     }
 
 
-class babyUtils
+    class babyUtils
     {
 
 
-    public string getPresInput(KeyEventArgs e)
+        public string getPresInput(KeyEventArgs e)
         {
             KeysConverter kc = new KeysConverter();
 
             //Properties.PresentKB.Default["Name"].ToString()
 
-            foreach(SettingsProperty prop in Properties.PresentKB.Default.Properties)
+            foreach (SettingsProperty prop in Properties.PresentKB.Default.Properties)
             {
 
-                if(e.KeyCode == (Keys)kc.ConvertFromString(Properties.PresentKB.Default[prop.Name].ToString())){
+                if (e.KeyCode == (Keys)kc.ConvertFromString(Properties.PresentKB.Default[prop.Name].ToString()))
+                {
                     Console.WriteLine(prop.Name);
                     return prop.Name;
                 }
@@ -87,13 +89,14 @@ class babyUtils
             KeysConverter kc = new KeysConverter();
 
             //Properties.PresentKB.Default["Name"].ToString()
+            Debug.WriteLine("lkhfds");
 
             foreach (SettingsProperty prop in ScoreKB.Default.Properties)
             {
 
                 if (e.KeyCode == (Keys)kc.ConvertFromString(ScoreKB.Default[prop.Name].ToString()))
                 {
-                    Console.WriteLine(prop.Name);
+                    Debug.WriteLine(prop.Name);
                     return prop.Name;
                 }
 
@@ -107,9 +110,29 @@ class babyUtils
         {
             await Task.Run(() =>
             {
-                StreamWriter file = new StreamWriter(Properties.Settings.Default.ExpPath + @"\output\" + filename);
+                bool fileWritten = false;
+                string tmpFilename = filename;
+                int fileCount = 0;
+
+                while (!fileWritten)
+                {
+                    
+                    if (File.Exists(Properties.Settings.Default.ExpPath + @"\output\" + tmpFilename))
+                    {
+                        tmpFilename = fileCount.ToString() + "_" + filename;
+                        fileCount++;
+                        Debug.WriteLine(tmpFilename);
+                    }
+                    else
+                    {
+                        fileWritten = true;
+                    }
+                }
+
+                StreamWriter file = new StreamWriter(Properties.Settings.Default.ExpPath + @"\output\" + tmpFilename);
                 file.Write(timings);
                 file.Close();
+                Debug.WriteLine(Properties.Settings.Default.ExpPath + @"\output\" + tmpFilename);
             });
 
         }

@@ -1,5 +1,4 @@
 ﻿
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,9 +11,31 @@ using System.Media;
 using System.Timers;
 using System.Threading;
 using System.Windows.Forms;
+using OpenCvSharp;
+using MS.WindowsAPICodePack.Internal;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace LincolnTest
 {
+    public static class IListExtensions
+    {
+        private static Random rng = new Random();
+
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+    }
+
     public partial class StimWind : Form
     {
         babyUtils myUtils = new babyUtils();
@@ -31,10 +52,13 @@ namespace LincolnTest
 
         public Present parentWindow;
 
-        AxWMPLib.AxWindowsMediaPlayer wplayer = new AxWMPLib.AxWindowsMediaPlayer();
 
-        List<timeStampInfo> stampInfo = new List<timeStampInfo>();
-        timeStampInfo info = new timeStampInfo();
+        private SoundPlayer audioPlayer;
+
+        Screen screen;
+
+        List<TimeStampInfo> stampInfo = new List<TimeStampInfo>();
+        TimeStampInfo info = new TimeStampInfo();
         Stopwatch stopwatch = new Stopwatch();
 
         string[] listLImage;
@@ -46,11 +70,13 @@ namespace LincolnTest
         string attnAudio = "";
         bool trialRunning;
         bool trialStarted = false;
-        bool isAutoPlay = true;
+        public bool isShuffled = false;
+        public bool isAutoPlay = true;
 
         string filename;
 
         int index = 0;
+        List<int> indexShuffler = new List<int>();
 
         // Instantiate new MicroTimer and add event handler
         MicroLibrary.MicroTimer microTimer = new MicroLibrary.MicroTimer();
@@ -58,15 +84,56 @@ namespace LincolnTest
         public StimWind()
         {
             InitializeComponent();
-            this.WindowState = FormWindowState.Maximized;
-            this.MinimumSize = this.Size;
-            this.MaximumSize = this.Size;
+            setupScreen();
+
+            // this.MaximumSize = this.Size;
             microTimer.MicroTimerElapsed +=
                     new MicroLibrary.MicroTimer.MicroTimerElapsedEventHandler(OnTimedEvent);
 
             attentionPicBox.Visible = false;
+
+            audioPlayer = new SoundPlayer();
+
         }
 
+        private void setupScreen()
+        {
+            // Create stimuli window on 2nd screen and calculate sizes and positions for stimuli
+            this.WindowState = FormWindowState.Maximized;
+            this.MinimumSize = this.Size;
+
+            foreach (Screen scrn in Screen.AllScreens)
+            {
+                if (scrn.DeviceName == Properties.Settings.Default.stimulusDisplay)
+                {
+                    screen = scrn;
+                }
+                else
+                {
+                    screen = Screen.AllScreens[0];
+                }
+            }
+            Rectangle bounds = screen.Bounds;
+
+            this.SetBounds(bounds.X, bounds.Y, bounds.Width, bounds.Height);
+
+            int imageHeight = bounds.Height / 5;
+            //int imageWidth = bounds.Width / 5;
+            int imageWidth = (int)((double)imageHeight * 1.6);
+
+            rightStimPic.Size = new System.Drawing.Size(imageWidth, imageHeight);
+            rightStimPic.Location = new System.Drawing.Point(((bounds.Width / 2) / 2) - (rightStimPic.Size.Width / 2), (bounds.Height / 2) - (imageHeight / 2));
+            leftStimPic.Size = new System.Drawing.Size(imageWidth, imageHeight);
+            leftStimPic.Location = new System.Drawing.Point((int)((bounds.Width / 2) * 1.5) - (leftStimPic.Size.Width / 2), (bounds.Height / 2) - (imageHeight / 2));
+            attentionPicBox.Location = new System.Drawing.Point(bounds.Width / 2 - (attentionPicBox.Size.Width / 2), bounds.Height / 2 - (attentionPicBox.Size.Height / 2));
+        }
+
+        private Color stringToColour(string colour)
+        {
+            Color windowColour = Color.FromArgb(Int32.Parse(colour));
+
+            return windowColour;
+        }
         public void SetupExperiment()
         {
             index = 0;
@@ -74,15 +141,16 @@ namespace LincolnTest
             if (leftStimPic.ImageLocation != null) leftStimPic.Visible = false;
             if (rightStimPic.ImageLocation != null) rightStimPic.Visible = false;
 
-
             attnImage = blockInfo.attnImage;
             attnAudio = blockInfo.attnAudio;
 
             attentionPicBox.ImageLocation = attnImage;
 
+            this.BackColor = stringToColour(blockInfo.bgColour);
+
             if (File.Exists(attnAudio))
             {
-                Console.WriteLine("File found");
+                Console.WriteLine("Audio file found");
             }
             else
             {
@@ -92,20 +160,18 @@ namespace LincolnTest
 
         public bool StartExperiment()
         {
-            // Only do this once
-            // if (!trialStarted) return false;
+            //if (!trialStarted) return false;
 
-            label1.Text = "Boop";
-
-            wplayer.CreateControl();
-
+            label1.Text = "";
             attentionPicBox.ImageLocation = blockInfo.attnImage;
 
-            if (blockInfo.title == null)
+            if (blockInfo.blockName == null)
             {
                 Console.WriteLine("Block failed");
+                return false;
             }
 
+            // Parse images from strings to file list
             listLImage = trialInfo.stimulusList.ToString().Split(',');
             Console.WriteLine("Images loaded: " + trialInfo.stimulusList.ToString());
             listRImage = trialInfo.stimulusListRight.ToString().Split(',');
@@ -113,13 +179,21 @@ namespace LincolnTest
             listAudioStimsSide = trialInfo.audioStimulusSide.ToString().Split(',');
             Console.WriteLine(trialInfo.audioStimulusSide.ToString());
 
-            // Create a timer with a millisecond interval
-            vonsetTimer = new System.Timers.Timer(int.Parse(blockInfo.vOnset + 1)); // Delay before showing stimulus
-            aonsetTimer = new System.Timers.Timer(int.Parse(blockInfo.aOnset + 1)); // Delay before playing audio
+            int i = 0;
+            foreach (var item in listLImage) {
+                indexShuffler.Add(i);
+                i++;
+            }
+
+            if(isShuffled) indexShuffler.Shuffle();
+
+            // Create timers for simuli
+            vonsetTimer = new System.Timers.Timer(int.Parse(blockInfo.vOnset) + 1); // Delay before showing stimulus
+            aonsetTimer = new System.Timers.Timer(int.Parse(blockInfo.aOnset) + 1); // Delay before playing audio
             maxTrialDurTimer = new System.Timers.Timer(int.Parse(blockInfo.maxTrialDuration)); // Delay before ending trial
             autoPlayTimer = new System.Timers.Timer(1500);
 
-            // Hook up the Elapsed event for the timer
+            // Hook up the Elapsed events for the timer
             vonsetTimer.Elapsed += showStims;
             vonsetTimer.AutoReset = false;
             vonsetTimer.Stop();
@@ -138,9 +212,7 @@ namespace LincolnTest
             autoPlayTimer.Elapsed += autoNextTrial;
             autoPlayTimer.AutoReset = false;
             autoPlayTimer.Stop();
-            
 
-            trialStarted = true;
             stopwatch.Start();
             startTrial();
 
@@ -149,26 +221,19 @@ namespace LincolnTest
 
         private void startTrial()
         {
-            
-            setStims(listLImage[index], listRImage[index], listAudioStims[index]);
-            Console.WriteLine("Setting stims");
-            Console.WriteLine("Right Image: " + listRImage[index]);
+            // Get shuffled index
+            int tempIndex = indexShuffler[index];
+
+            // Set stimuli to current trial entries
+            setStims(listLImage[tempIndex], listRImage[tempIndex], listAudioStims[tempIndex]);
             trialRunning = true;
 
-            // Record timestamp
-            if (index == 0)
-            {
-                stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "Start" });
-            }
-            else
-            {
-                stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "Trial: " + index });
-            }            
+            long timeMS = stopwatch.ElapsedMilliseconds;
+            
+            // Record timestamp           
 
-            Console.WriteLine("Starting trial");
-            // Console.WriteLine("Vonset: " + int.Parse(blockInfo.vOnset) + "   Aonset: " + int.Parse(blockInfo.aOnset) + "    max: " + int.Parse(blockInfo.maxTrialDuration));
-
-
+            stampInfo.Add(new TimeStampInfo { timeStamp = parentWindow.getCameraFrames().ToString(), eventCode = "Trial " + (index + 1), frame = timeMS });
+            
             aonsetTimer.Start();
             vonsetTimer.Start();
             maxTrialDurTimer.Start();
@@ -184,7 +249,7 @@ namespace LincolnTest
             // Only move if we've pressed start and we're not currently showing a trial
             if (trialRunning || !trialStarted) return;
 
-            if(index < listLImage.Length - 1)
+            if (index < listLImage.Length - 1)
             {
                 index++;
                 startTrial();
@@ -195,17 +260,17 @@ namespace LincolnTest
             }
         }
 
-        private void endSession()
+        private async void endSession()
         {
             string txt = "";
-
-            foreach (var stamp in stampInfo){
-                txt += stamp.eventCode + "-" + stamp.timeStamp + "\r\n";
+            
+            
+            foreach (var stamp in stampInfo)
+            {
+                txt += stamp.eventCode + "-" + stamp.timeStamp + "-"+ stamp.frame + "\r\n";
             }
 
             //Console.WriteLine("File: " + txt); 
-
-            Console.WriteLine("Ending session");
 
             if (aonsetTimer != null)
             {
@@ -222,53 +287,50 @@ namespace LincolnTest
                 maxTrialDurTimer.Stop();
             }
 
-            filename = trialInfo.title + ".out";
+            filename = trialInfo.partCode + ".out";
 
             IniFile MyIni = new IniFile(Properties.Settings.Default.ExpPath + "/project.ini");
             MyIni.Write("ScoreFile", filename);
 
-            myUtils.ExampleAsync(txt, filename);
+            System.Threading.Tasks.Task writefile = myUtils.ExampleAsync(txt, filename);
+            await writefile;
 
-            DialogResult result; 
+            DialogResult result;
 
-            result = MessageBox.Show("Trials Complete", "Finished", MessageBoxButtons.OK);
+            result = MessageBox.Show("Trials Complete", "Finished", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 //Hide();
                 parentWindow.stimWindowClosed();
             }
+
+
         }
 
         private void setStims(string imageL, string imageR, string audio)
         {
             if (imageL != "")
             {
-                leftStimPic.ImageLocation = Properties.Settings.Default.stimPath + "/" + imageL;
-                // Console.WriteLine("ImageL:  " + imageL);
+                leftStimPic.ImageLocation = Properties.Settings.Default.stimPathVisual + "/" + imageL;
             }
             else
             {
                 leftStimPic.ImageLocation = null;
-                // Console.WriteLine("Empty?  " + imageL);
             }
 
             if (imageR != "")
             {
-                rightStimPic.ImageLocation = Properties.Settings.Default.stimPath + "/" + imageR;
-                 // Console.WriteLine("ImageR:  " + imageR);
+                rightStimPic.ImageLocation = Properties.Settings.Default.stimPathVisual + "/" + imageR;
             }
             else
             {
                 rightStimPic.ImageLocation = null;
-                // Console.WriteLine("Empty?  " + imageR);
             }
-            audioStimFile = Properties.Settings.Default.stimPath + "/" + audio;
+            audioStimFile = Properties.Settings.Default.stimPathVisual + "/" + audio;
         }
 
         private void showStims(Object source, ElapsedEventArgs e)
         {
-            
-
             if (leftStimPic.InvokeRequired)
             {
                 var d = new SafeCallDelegate(showStims);
@@ -286,15 +348,12 @@ namespace LincolnTest
                 if (leftStimPic.ImageLocation != null) leftStimPic.Visible = true;
                 if (rightStimPic.ImageLocation != null) rightStimPic.Visible = true;
 
-                Console.WriteLine("Showing Stims: " + index);
-
                 // Record timestamp
-                stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "showStims" });
+                stampInfo.Add(new TimeStampInfo { timeStamp = parentWindow.getCameraFrames().ToString(), eventCode = "showStims", frame = stopwatch.ElapsedMilliseconds });
 
-                
                 vonsetTimer.Stop();
             }
-            
+
         }
 
 
@@ -317,12 +376,12 @@ namespace LincolnTest
             {
                 leftStimPic.Visible = false;
                 rightStimPic.Visible = false;
-                stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "hideStims" });
+                stampInfo.Add(new TimeStampInfo { timeStamp = parentWindow.getCameraFrames().ToString(), eventCode = "hideStims", frame = stopwatch.ElapsedMilliseconds });
 
                 trialRunning = false;
                 maxTrialDurTimer.Stop();
 
-                if (index >= listLImage.Length)
+                if (index >= listLImage.Length - 1)
                 {
                     endSession();
                 }
@@ -361,66 +420,48 @@ namespace LincolnTest
 
         private void playAudio(Object source, ElapsedEventArgs e)
         {
-            Console.WriteLine("Audio triggered");
 
-            if (wplayer.InvokeRequired)
+            if (File.Exists(audioStimFile))// Checking to see if the file exist
             {
-                var d = new SafeCallDelegate(playAudio);
-                try
-                {
-                    wplayer.Invoke(d, new object[] { source, e });
-                }
-                catch
-                {
-                    Console.WriteLine("Failed hide");
-                }
+                audioPlayer.SoundLocation = audioStimFile;
 
+                var tries = 3;
+                while (true)
+                {
+                    try
+                    {
+                        audioPlayer.Play();
+                        stampInfo.Add(new TimeStampInfo { timeStamp = parentWindow.getCameraFrames().ToString(), eventCode = "AudioStimPlayed", frame = stopwatch.ElapsedMilliseconds });
+                        break; // success!
+                    }
+                    catch
+                    {
+                        if (--tries == 0)
+                            throw;
+                        Console.WriteLine("Failed");
+                        Thread.Sleep(10);
+                    }
+                }
             }
             else
             {
-                if (File.Exists(audioStimFile))// Checking to see if the file exist
-                {
-                    wplayer.URL = audioStimFile;
-
-                    var tries = 3;
-                    while (true)
-                    {
-                        try
-                        {
-                            wplayer.Ctlcontrols.play();
-                            stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "AudioStimPlayed" });
-                            Console.WriteLine("Audio");
-                            break; // success!
-                        }
-                        catch
-                        {
-                            if (--tries == 0)
-                                throw;
-                            Console.WriteLine("Failed");
-                            Thread.Sleep(10);
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Audio file not found");
-                }
-                aonsetTimer.Stop();
+                Console.WriteLine("Audio file not found");
             }
+            aonsetTimer.Stop();
         }
         private void showAttention()
         {
             if (attentionPicBox.Visible == true)
             {
                 attentionPicBox.Visible = false;
-                stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "V Attn Off" });
+                stampInfo.Add(new TimeStampInfo { timeStamp = parentWindow.getCameraFrames().ToString(), eventCode = "V Attn Off", frame = stopwatch.ElapsedMilliseconds });
             }
             else
             {
                 if (attentionPicBox.Visible == false)
                 {
                     attentionPicBox.Visible = true;
-                    stampInfo.Add(new timeStampInfo { timeStamp = stopwatch.ElapsedMilliseconds.ToString(), eventCode = "V Attn On" });
+                    stampInfo.Add(new TimeStampInfo { timeStamp = parentWindow.getCameraFrames().ToString(), eventCode = "V Attn On", frame = stopwatch.ElapsedMilliseconds });
                 }
             }
         }
@@ -438,22 +479,27 @@ namespace LincolnTest
 
             switch (inputKey)
             {
-                case "Start":
+                case "TrialStart":
+                    if (trialStarted) break;
+                    trialStarted = true;
                     StartExperiment();
                     break;
                 case "ShowAttendPic":
                     showAttention();
                     break;
-                case "ShowAttend":
+                case "AttentionImage":
+                    showAttention();
+                    break;
+                case "AttentionSound":
                     showAttention();
                     break;
                 case "AutoPlay":
                     autoPlay();
                     break;
-                case "Next":
+                case "NextTrial":
                     nextTrialKey();
                     break;
-                case "End":
+                case "EndTrial":
                     endSession();
                     break;
                 case "none":
@@ -462,10 +508,14 @@ namespace LincolnTest
             }
         }
     }
-    public class timeStampInfo
+    public class TimeStampInfo
     {
         public string timeStamp { get; set; }
         public string eventCode { get; set; }
+        public long frame { get; set; }
     }
+
+
+    
 
 }

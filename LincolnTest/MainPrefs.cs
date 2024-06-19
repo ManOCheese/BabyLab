@@ -13,13 +13,15 @@ namespace LincolnTest
     public partial class MainPrefs : Form
     {
         String monInfo = "";
-        public string stimPath = Properties.Settings.Default.stimPath;
+        string displayID = Properties.Settings.Default.stimulusDisplay;
+        public string stimPathVisual = Properties.Settings.Default.stimPathVisual;
+        public string stimPathAudio = Properties.Settings.Default.stimPathAudio;
 
         public MainPrefs()
         {
             InitializeComponent();
 
-            stimFolderText.Text = Properties.Settings.Default.stimPath;
+            vStimFolderText.Text = Properties.Settings.Default.stimPathVisual;
             screenBox.Items.Add("None");
 
             foreach (var aScreen in Screen.AllScreens)
@@ -36,8 +38,9 @@ namespace LincolnTest
 
                 if (screenBox.Text == aScreen.DeviceName)
                 {
-                    monInfo += "Width: " + aScreen.Bounds.Width + "\r\n" + "Height: " + aScreen.Bounds.Height +"\r\n";
+                    monInfo += "Screen Resolution: " + aScreen.Bounds.Width + "x" + aScreen.Bounds.Height;
                     monitorInfo.Text = monInfo;
+                    displayID = aScreen.DeviceName;
                 }
                 else
                 {
@@ -52,14 +55,29 @@ namespace LincolnTest
 
             if (myOpenDialog.ShowDialog() == DialogResult.OK)
             {
-                stimFolderText.Text = myOpenDialog.SelectedPath;
-                stimPath = stimFolderText.Text;
+                vStimFolderText.Text = myOpenDialog.SelectedPath;
+                stimPathVisual = vStimFolderText.Text;
             }
         }
 
         private void okButton_Click(object sender, EventArgs e)
-        {            
+        {
+            Properties.Settings.Default.stimulusDisplay = displayID;
+            Properties.Settings.Default.stimPathVisual = vStimFolderText.Text;
+            Properties.Settings.Default.stimPathAudio = aStimFolderText.Text;
+            Properties.Settings.Default.Save();
             DialogResult = DialogResult.OK;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog myOpenDialog = new FolderBrowserDialog();
+
+            if (myOpenDialog.ShowDialog() == DialogResult.OK)
+            {
+                aStimFolderText.Text = myOpenDialog.SelectedPath;
+                stimPathAudio = aStimFolderText.Text;
+            }
         }
     }
 }

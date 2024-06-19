@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Basler.Pylon;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Xml;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Timers;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace LincolnTest
 {
@@ -20,8 +18,8 @@ namespace LincolnTest
         CreateXML myXML = new CreateXML();
         XmlDocument doc = new XmlDocument();
 
-        List<BlockInfo> blockInfo = new List<BlockInfo>();
-        List<TrialInfo> trialInfo = new List<TrialInfo>();
+        //BlockInfo blockInfo = new BlockInfo();
+        //TrialInfo trialInfo = new TrialInfo();
 
         XmlNodeList trialList = null;
 
@@ -31,46 +29,97 @@ namespace LincolnTest
 
         // Create Child windows Window
         PresentKBOp presWindow = new PresentKBOp();
-        StimWind stimWindow = new StimWind();
         viewSettings viewSettingsWindow = new viewSettings();
+        StimWind stimWindow = new StimWind();
 
         private static System.Timers.Timer previewTimer;
+        private static System.Timers.Timer camPreviewTimer;
+
         Bitmap preview = new Bitmap(1920, 1080);
         Rectangle rec = new Rectangle(0, 0, 1920, 1080);
         private delegate void SafeCallDelegate(Object source, ElapsedEventArgs e);
 
         // Temp lists for counterbalance button
-        List<string> tempStimPos = new List<string>();
-        List<string> tempStimRPos = new List<string>();
         List<string> tempStimsL = new List<string>();
         List<string> tempStimsR = new List<string>();
         List<string> tempAudioStims = new List<string>();
         List<string> tempAudioStimsCB = new List<string>();
 
-        
+        // Basler Camera
+        BaslerCam camera;
+        BaslerCam camera2;
+        bool cameraHidden;
+        string camOutputPath = "";
 
-    public Present()
+        float keyFrame = 0;
+
+        private PixelDataConverter converter = new PixelDataConverter();
+
+        public Present()
         {
             InitializeComponent();
             PopulateExpListBox();
-            UpdateKeysText();
+            UpdateKeysText();          
+            
+        }
+
+        private bool setupCameras()
+        {
+            camera = new BaslerCam("169.254.72.175");
+            camera2 = new BaslerCam("169.254.78.175");
+
+            if (camera.found && camera2.found)
+            {
+                string taskFileName = (string)expListBox.Text;
+                string[] taskName = taskFileName.Split('.');
+
+                camOutputPath = Properties.Settings.Default.ExpPath + "\\CamOutput\\";
+                Directory.CreateDirectory(camOutputPath);
+
+                camera.camPath = camOutputPath;
+                camera2.camPath = camOutputPath;
+                Debug.WriteLine(camera.camPath);
+                camera.cam_name = (string)trialListBox.SelectedItem + "_Left";
+                camera2.cam_name = (string)trialListBox.SelectedItem + "_Right";
+
+                return true;
+            }
+            scanCamButton.Enabled = true;
+
+            return false;
+        }
+
+        private void startCameras()
+        {
+            showCamButton.Enabled = false;
+            hideCamButton.Enabled = true;
+                    
+            camera.conShot();
+            camera2.conShot();
+
+            camPreviewTimer = new System.Timers.Timer(60);
+
+            camPreviewTimer.Elapsed += cameraPreview;
+            camPreviewTimer.AutoReset = true;
+            camPreviewTimer.Enabled = true;
         }
 
         private void PopulateExpListBox()
         {
-            DirectoryInfo dinfo = new DirectoryInfo(Properties.Settings.Default.LastProject);
+            DirectoryInfo dinfo = new DirectoryInfo(Properties.Settings.Default.ExpPath);
             FileInfo[] Files = dinfo.GetFiles("*.bex");
             expListBox.Items.Clear();
 
-            Console.WriteLine("Dir: " + Properties.Settings.Default.LastProject);
+            Console.WriteLine("Dir: " + Properties.Settings.Default.ExpPath);
 
             foreach (FileInfo file in Files)
             {
                 expListBox.Items.Add(file.Name);
+                Debug.WriteLine(file.Name);
             }
             if (expListBox.Items.Count > 0)
             {
-                expListBox.SelectedIndex = 0;
+                // expListBox.selec = 1;
             }
         }
 
@@ -88,107 +137,46 @@ namespace LincolnTest
                 {
                     text = setting.Name + ":\t\t" + Properties.PresentKB.Default[setting.Name] + Environment.NewLine;
                 }
-                
-                
+
                 keyTextBox.AppendText(text);
             }
         }
 
         private void refreshBlockList()
         {
-            bool blocksFound = false;
-            bool filesFound = false;
-            string fileName = "";
+            // Clear current list
+            blockListBox.Items.Clear();
 
-            foreach (object file in expListBox.CheckedItems)
+            // Get reader to read the blocks
+            List< string> blocks = myXML.getBlockList(expListBox.Text);
+
+            Debug.WriteLine("Read " + blocks.Count + " lines");
+            if (blocks.Count == 0) return;
+
+            foreach(string block in blocks)
             {
-                fileName = file.ToString();
-                Console.WriteLine("File: " + fileName);
-                doc = myXML.getBlocks(fileName);
-                filesFound = true;
-            }
-
-            XmlNode root = doc.DocumentElement;
-
-            if (filesFound)
-            {
-                if (root.HasChildNodes)
-                {
-                    XmlNode first = root.NextSibling;
-
-                    blockListBox.Items.Clear();
-                    XmlNodeList blockList = root.SelectNodes("Block");
-
-                    for (int i = 0; i < blockList.Count; i++)
-                    {
-                        // blockListBox.Items.Add(blockList[i].FirstChild.InnerXml);
-                        XmlElement node = (XmlElement)blockList[i];
-
-                        blockListBox.Items.Add(node["title"].InnerText);
-
-                        blocksFound = true;
-                        blockInfo.Add(new BlockInfo() { });
-                        load_blockInfo(node, i);
-                    }
-
-                    if (blocksFound)
-                    {
-                        blockListBox.SetSelected(0, true);
-                    }
-                }
+                blockListBox.Items.Add(block);
             }
         }
-
-
-        private void expListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            this.BeginInvoke((MethodInvoker)(
-            () => refreshBlockList()));
-
-            //TODO: Save changes
-        }
-
         private void refresh_trialListBox()
         {
-
+            // Clear current list
             trialListBox.Items.Clear();
-            XmlNode root = doc.DocumentElement;
-            Console.WriteLine("Refresh trials");
-            trialInfo.Clear();
 
-            List<string> blocks = new List<string>();
+            // Get reader to read the blocks
+            List<string> trials = myXML.getTrialList(expListBox.Text, blockListBox.Text);
 
-            for (int x = 0; x < blockListBox.CheckedItems.Count; x++)
+            if (trials.Count == 0) return;
+
+            foreach (string trial in trials)
             {
-                blocks.Add(blockListBox.CheckedItems[x].ToString());
+                trialListBox.Items.Add(trial);
             }
-
-            foreach (string block in blocks)
-            {
-                block.ToString();// Add Trials that match block title
-                trialList = root.SelectNodes("descendant::Trial[Block='" + block + "']");
-                for (int i = 0; i < trialList.Count; i++)
-                {
-                    trialListBox.Items.Add(trialList[i].FirstChild.InnerXml);
-                    trialInfo.Add(new TrialInfo() { });
-                    trialInfo[i] = load_trialInfo(trialList[i], i);
-                }
-            }
-
-            if(trialList.Count <= 0)
-            {
-
-            }
-            else
-            {
-                trialListBox.SetSelected(0, true);
-            }
-            
         }
 
         private void readyToStart()
         {
-            if (trialListBox.CheckedItems.Count > 0)
+            if (trialListBox.SelectedItems.Count > 0)
             {
                 startButton.Enabled = true;
             }
@@ -200,25 +188,30 @@ namespace LincolnTest
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            if (trialListBox.SelectedItems.Count == 0) return;
+
+            if (setupCameras())
+            {
+                startCameras();
+            }            
+
             previewTimer = new System.Timers.Timer(60);
 
             stimWindow.parentWindow = this;
+            stimWindow.isAutoPlay = autoRunCheckBox.Checked;            
 
-            int trialIndex = 1;
-            int blockIndex = 0;
+            // Send the selected trial to the stimwindow
+            stimWindow.trialInfo = myXML.getTrialInfo(trialListBox.SelectedIndex);
+            stimWindow.trialInfo.isPresented = true;
+            myXML.updateTrial(trialListBox.SelectedIndex, stimWindow.trialInfo);
+            stimWindow.blockInfo = myXML.getBlockInfo(blockListBox.SelectedIndex);
 
-            foreach (var item in trialListBox.CheckedIndices)
-            {
-                Console.WriteLine("Checked item:  " + item.ToString());
-                trialIndex = int.Parse(item.ToString());
-            }            
-
-            stimWindow.trialInfo = trialInfo[trialIndex];
-            stimWindow.blockInfo = blockInfo[blockIndex];
-            stimWindow.Show();
-
+            // Init the stim window and start it sending preview images back
             stimWindow.SetupExperiment();
             stimWindow.DrawToBitmap(preview, rec );
+            stimWindow.Show();
+            stimWindow.isShuffled = shuffleCheckBox.Checked;
+
             StimWinPreview.Image = preview;
 
             previewTimer.Elapsed += refreshPreview;
@@ -226,11 +219,18 @@ namespace LincolnTest
             previewTimer.Enabled = true;
 
             startButton.Enabled = false;
+            camera.writing = true;
+            camera2.writing = true;
         }
+
+        
 
         private void refreshPreview(Object source, ElapsedEventArgs e)
         {
-            // TODO: Stop crash on closing
+            if(stimWindow == null)
+            {
+                return;
+            }
             if (stimWindow.InvokeRequired)
             {
                 var d = new SafeCallDelegate(refreshPreview);
@@ -253,18 +253,49 @@ namespace LincolnTest
             }
         }
 
+        private void cameraPreview(Object source, ElapsedEventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(cameraPreview);
+                try
+                {
+                    this.Invoke(d, new object[] { source, e });
+                }
+                catch
+                {
+                    Console.WriteLine("Failed hide");
+                }
+            }
+            else
+            {                
+                if (camera.grabResult != null && !cameraHidden)
+                {
+                    if (statusLabel1.Text == "Offline")
+                    {
+                        statusLabel1.Text = "Online";
+                    }
+                    cameraImageBox1.Image = camera.bitmap ;
+                    cameraImageBox2.Image = camera2.bitmap;
+                }
+            }
+        }
+
 
         public void stimWindowClosed()
         {
-            // this.startButton.Enabled = true;
-            // TODO: Thread error
+            
+            stimWindow.Invoke((MethodInvoker)delegate
+            {
+                // Hide the stim window and stop the cameras
+
+                this.startButton.Enabled = true;
+                stimWindow.Hide();
+                camera.Stop();
+                camera2.Stop();
+            });
         }
 
-        private void blockListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            this.BeginInvoke((MethodInvoker)(
-            () => refresh_trialListBox()));            
-        }
 
         private void trialListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
@@ -272,157 +303,12 @@ namespace LincolnTest
             () => readyToStart()));
         }
 
-        public TrialInfo load_trialInfo(XmlNode trial, int trialNum)
-        {
-            XmlElement trialElement = (XmlElement)trial;
-            bool foundError = false;
-            trialInfo[trialNum].title = trialElement["Title"].InnerText;
-
-            Console.WriteLine("Attempting to load " + trialElement["Title"].InnerText);
-
-            tempStimsL.Clear();
-            tempStimsR.Clear();
-            tempStimPos.Clear();
-            tempStimRPos.Clear();
-            tempAudioStims.Clear();
-            tempAudioStimsCB.Clear();
-
-            if (trialElement.InnerXml.Contains("VisualStimuli"))
-            {
-
-                XmlNodeList stims = trialElement.SelectNodes("VisualStimuli");
-
-                for (int i = stims.Count - 1; i >= 0; i--)
-                {
-
-                    Console.WriteLine("Attempting to load stims");
-
-                    if (checkStimulusFile(stims[i].InnerText))
-                    {
-                        tempStimsL.Add(stims[i].InnerText);
-
-                    }
-                    else
-                    {
-                        tempStimsL.Add("");
-                    }
-                    if (checkStimulusFile(stims[i].Attributes["RightImage"].Value))
-                    {
-                        tempStimsR.Add(stims[i].Attributes["RightImage"].Value);
-                        Console.WriteLine("Loaded Right image: " + stims[i].Attributes["RightImage"].Value);
-                    }
-                    else
-                    {
-                        tempStimsR.Add("");
-                    }
-                    if (checkStimulusFile(stims[i].Attributes["audioStimulus"].Value))
-                    {
-                        tempAudioStims.Add(stims[i].Attributes["audioStimulus"].Value);
-                    }
-                    else
-                    {
-                        tempAudioStims.Add("");
-                    }
-                    if (stims[i].Attributes["audioStimulusCB"].Value != "")
-                    {
-                        tempAudioStimsCB.Add(stims[i].Attributes["audioStimulusCB"].Value);
-                    }
-                    else
-                    {
-                        tempAudioStimsCB.Add("");
-                    }
-                    if (stims[i].Attributes.GetNamedItem("Pos") != null)
-                    {
-                        tempStimPos.Add(stims[i].Attributes["Pos"].Value);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error 1 in " + trialInfo[trialNum].title);
-                        foundError = true;
-                        tempStimPos.Add("{X=0,Y=73}");
-                    }
-                    if (stims[i].Attributes.GetNamedItem("Pos") != null)
-                    {
-                        tempStimRPos.Add(stims[i].Attributes["RPos"].Value);
-                    }
-                    else
-                    {
-                        foundError = true;
-                        Console.WriteLine("Error 2 in " + trialInfo[trialNum].title);
-                        tempStimRPos.Add("{X=100,Y=73}");
-                    }
-
-                    //tempStimPos.Add(stims[i].Attributes["Pos"].Value);
-                    // tempStimPos.Add(stims[i].Attributes["RPos"].Value);
-                }
-
-                tempStimsL.Reverse();
-                tempStimsR.Reverse();
-                tempStimPos.Reverse();
-                tempStimRPos.Reverse();
-                tempAudioStims.Reverse();
-                tempAudioStimsCB.Reverse();
-
-                trialInfo[trialNum].stimulusList = string.Join(",", tempStimsL);
-                trialInfo[trialNum].stimulusListRight = string.Join(",", tempStimsR);
-                trialInfo[trialNum].stimulusPosList = string.Join(":", tempStimPos);
-                trialInfo[trialNum].stimulusRPosList = string.Join(":", tempStimPos);
-                trialInfo[trialNum].audioStimulus = string.Join(",", tempAudioStims);
-                trialInfo[trialNum].audioStimulusSide = string.Join(",", tempAudioStimsCB);
-
-                // trialIndex = trialListBox.SelectedIndex;
-
-                if (foundError)
-                {
-                    myXML.updateTrial(trialElement, trialInfo[trialNum]);
-                }
-            }
-            else
-            {
-                trialInfo[trialNum].stimulusList = "";
-                trialInfo[trialNum].stimulusListRight = "";
-            }
-
-            return trialInfo[trialNum];
-        }
-
-        // Loads the each block from XML to the array List
-        private void load_blockInfo(XmlNode block, int blockNum)
-        {
-
-            XmlElement blockElement = (XmlElement)block;
-            selectedBlock = blockElement;
-            blockInfo[blockNum].title = blockElement["title"].InnerText;
-
-            foreach (PropertyInfo propertyinfo in typeof(BlockInfo).GetProperties())
-            {
-                if (propertyinfo != null)
-                {
-                    var valueOfField = propertyinfo.GetValue(blockInfo[blockNum]);
-                    var fieldname = propertyinfo.Name;
-
-
-                    if (blockElement.SelectNodes(fieldname).Count > 0)
-                    {
-                        propertyinfo.SetValue(blockInfo[blockNum], blockElement[fieldname].InnerText);
-                        Console.WriteLine(fieldname + "  with value  " + valueOfField + "  loaded.");
-                    }
-                    else
-                    {
-                        myXML.addMissingNode(blockElement, fieldname, "0");
-                        // errorMessage("Unable to read " + fieldname + " from file", "File repaired and setting to default");
-                        propertyinfo.SetValue(blockInfo[blockNum], "0");
-                        // blockInfo[blockindex].hcWindow = "0";
-                    }
-                }
-            }
-        }
 
         private bool checkStimulusFile(string stimulus)
         {
             if (stimulus == "") { return true; }
 
-            if (File.Exists(Properties.Settings.Default.stimPath + "/" + stimulus))
+            if (File.Exists(Properties.Settings.Default.stimPathVisual + "/" + stimulus))
             {
                 return true;
             }
@@ -431,6 +317,15 @@ namespace LincolnTest
                 // errorMessage("Image " + stimulus + " not found", "");
                 return false;
             }
+        }
+
+        public float getCameraFrames()
+        {
+
+            keyFrame = camera.getKeyFrame();
+            
+
+            return keyFrame;
         }
 
         private void keySettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -455,7 +350,78 @@ namespace LincolnTest
 
         private void expListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            this.BeginInvoke((MethodInvoker)(
+            () => refreshBlockList()));
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
 
         }
+
+        private void scanCamButton_Click(object sender, EventArgs e)
+        {
+            if (setupCameras())
+            {
+                Debug.WriteLine("Found");
+                scanCamButton.Enabled = false;
+            }
+            else
+            {
+                Debug.WriteLine("Not Found");
+            }
+        }
+
+        // Lock the cursor so StimWindow doesn't lose focus
+
+        private void lockCursor(bool isLocked)
+        {
+            if (isLocked)
+            {
+                var rc = stimWindow.RectangleToScreen(new Rectangle(System.Drawing.Point.Empty, stimWindow.ClientSize));
+                Cursor.Position = new System.Drawing.Point(rc.Left + rc.Width / 2, rc.Top + rc.Height / 2);
+                Cursor.Clip = rc;
+                stimWindow.Capture = true;
+                stimWindow.Cursor = Cursors.Cross;
+                stimWindow.Focus();
+            }
+            else
+            {
+                Cursor.Clip = new Rectangle(0, 0, 0, 0);
+                stimWindow.Capture = false;
+                stimWindow.Cursor = Cursors.Default;
+            }
+        }
+
+
+        private void showCamButton_Click(object sender, EventArgs e)
+        {
+            cameraHidden = false;
+            showCamButton.Enabled = false;
+            hideCamButton.Enabled = true;
+        }
+
+        private void hideCamButton_Click(object sender, EventArgs e)
+        {
+            cameraHidden = true;
+            showCamButton.Enabled = true;
+            hideCamButton.Enabled = false;
+        }
+
+        private void trialListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)(
+            () => readyToStart()));
+
+            
+        }
+
+
+        private void blockListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)(
+            () => refresh_trialListBox()));
+        }
+
     }
 }

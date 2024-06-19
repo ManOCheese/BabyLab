@@ -12,7 +12,7 @@ namespace LincolnTest.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class PresentKB : global::System.Configuration.ApplicationSettingsBase {
         
         private static PresentKB defaultInstance = ((PresentKB)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new PresentKB())));
@@ -26,96 +26,72 @@ namespace LincolnTest.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("N")]
-        public string Next {
+        public string NextTrial {
             get {
-                return ((string)(this["Next"]));
+                return ((string)(this["NextTrial"]));
             }
             set {
-                this["Next"] = value;
+                this["NextTrial"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("B")]
-        public string Previous {
+        public string PreviousTrial {
             get {
-                return ((string)(this["Previous"]));
+                return ((string)(this["PreviousTrial"]));
             }
             set {
-                this["Previous"] = value;
+                this["PreviousTrial"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("S")]
-        public string Start {
+        public string TrialStart {
             get {
-                return ((string)(this["Start"]));
+                return ((string)(this["TrialStart"]));
             }
             set {
-                this["Start"] = value;
+                this["TrialStart"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Escape")]
-        public string End {
+        public string EndTrial {
             get {
-                return ((string)(this["End"]));
+                return ((string)(this["EndTrial"]));
             }
             set {
-                this["End"] = value;
+                this["EndTrial"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("A")]
-        public string ShowAttend {
+        public string AttentionImage {
             get {
-                return ((string)(this["ShowAttend"]));
+                return ((string)(this["AttentionImage"]));
             }
             set {
-                this["ShowAttend"] = value;
+                this["AttentionImage"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Q")]
-        public string PlayAttend {
+        public string AttentionSound {
             get {
-                return ((string)(this["PlayAttend"]));
+                return ((string)(this["AttentionSound"]));
             }
             set {
-                this["PlayAttend"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
-        public string Left {
-            get {
-                return ((string)(this["Left"]));
-            }
-            set {
-                this["Left"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Right")]
-        public string Right {
-            get {
-                return ((string)(this["Right"]));
-            }
-            set {
-                this["Right"] = value;
+                this["AttentionSound"] = value;
             }
         }
         
