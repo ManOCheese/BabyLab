@@ -86,7 +86,7 @@ namespace LincolnTest
             addDefaultBlock("Block1", "visual");
             return true;
         }
-
+        // Read blocks from a file
         public XmlDocument getBlocks(string fileName)
         {
             currFileName = fileName;
@@ -210,7 +210,7 @@ namespace LincolnTest
 
             doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
         }
-
+        // Update existing trial
         public bool updateTrial(int trialNum, TrialInfo trialInfo)
         {
             XmlElement trialElement = (XmlElement)trialsRead[trialNum];
@@ -320,7 +320,7 @@ namespace LincolnTest
             return true;
         }
 
-
+        // Add a default block
         public bool addDefaultBlock(string title, string type)
         {
             BlockInfo blockInfo = new BlockInfo();
@@ -355,7 +355,7 @@ namespace LincolnTest
         }
 
 
-
+        // Delete a block
         public void deleteBlock(XmlNode block)
         {
             XmlNode prevNode = block.PreviousSibling;
@@ -382,7 +382,7 @@ namespace LincolnTest
 
         }
 
-        // Load a file and return a list of block: Used to update lists in various windows
+        // Load a file and return a list of blocks: Used to update lists in various windows
         public List<string> getBlockList(string fileName)
         {
             List<string> blockList = new List<string>();
@@ -413,7 +413,7 @@ namespace LincolnTest
             }
             return blockList;
         }
-
+        // Return a list of trials for a block from the loaded file
         public List<string> getTrialList(string fileName, string blockName)
         {
             currFileName = fileName;
@@ -429,7 +429,7 @@ namespace LincolnTest
             return trialList;
 
         }
-
+        // Returns the info for a trial
         public TrialInfo getTrialInfo(int trialNum) { 
         
             TrialInfo trialInfo = new TrialInfo();
@@ -471,7 +471,7 @@ namespace LincolnTest
             return trialInfo;
             
         }
-
+        // Returns the info for a block
         public BlockInfo getBlockInfo(int blockNum)
         {
             BlockInfo blockInfo = new BlockInfo();

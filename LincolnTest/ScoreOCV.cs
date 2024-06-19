@@ -30,7 +30,7 @@ namespace LincolnTest
 {
     public partial class ScoreOCV : Form
     {
-        //OpenCV videos stuff
+        //OpenCV video parameters
 
         public bool isFullscreen = false;
         public bool isPlaying = false;
@@ -51,9 +51,12 @@ namespace LincolnTest
 
         private static System.Timers.Timer aTimer;
 
+        // Background workers for video reading and garbage collection
         private BackgroundWorker cam1Worker;
         private BackgroundWorker cam2Worker;
         private BackgroundWorker GCWorker;
+
+        // Video file names
         string video1fullName;
         string video2fullName;
 
@@ -71,7 +74,7 @@ namespace LincolnTest
             InitializeComponent();
 
             // Create background workers for reading video and garbage collection
-            //
+            // These are used to keep the UI responsive while the video is playing
 
             cam1Worker = new BackgroundWorker();
             cam1Worker.WorkerReportsProgress = true;
@@ -102,6 +105,7 @@ namespace LincolnTest
             timelineTrackBar.Minimum = 0;
             timelineTrackBar.Maximum = 500;
 
+            // Create a list of playback speeds any numbers are fine
             string[] speeds = new string[7];
             speeds[0] = "0.1";
             speeds[1] = "0.2";
@@ -119,7 +123,7 @@ namespace LincolnTest
 
             updateKeysText();
         }
-
+        // Garbage collection worker to keep memory usage low - Currently always runs every 10 seconds
         private void GCWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker bw = (BackgroundWorker)sender;
@@ -127,16 +131,19 @@ namespace LincolnTest
             while (true)
             {
                 bw.ReportProgress(0);
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(10000); // 10 seconds - Can be changed if more optimisation is needed
             }
         }
-
+        // Garbage collection worker action
         private void GCWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             GC.Collect();
         }
 
-
+        // Background worker for reading video 1
+        // This worker reads the video file and updates the video1picbox with the current frame
+        // It also updates the timelineTrackBar with the current frame
+        // Incorporates a playback speed to allow for slow motion playback
 
         private void worker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -154,7 +161,8 @@ namespace LincolnTest
                 OpenCvSharp.Point myPoint = new OpenCvSharp.Point(550, 950);
                 Scalar fontColour = new Scalar(112255);
 
-
+                // Different processes for single frame and continuous playback
+                // Singleframe is used for moving to a specific frame and then pausing
                 if (singleFrame)
                 {
 
@@ -184,7 +192,7 @@ namespace LincolnTest
             }
 
         }
-
+        // Worker action for video 1
         private void worker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             Mat image1 = (Mat)e.UserState;
@@ -198,48 +206,66 @@ namespace LincolnTest
                 video1picbox.Refresh();
             }
         }
-
+        // Same as worker1 but for video 2
         private void worker2_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker bw = (BackgroundWorker)sender;
 
             using (VideoCapture capture2 = new VideoCapture(video2fullName))
             {
-                int interval = (int)(1000 / capture2.Fps);
+                int interval = (int)((1000 / capture2.Fps) / playbackSpeed);
                 Mat image2 = new Mat();
 
-                if (isPlaying)
-                {
-                    while (capture2.Read(image2) != false)
-                    {
+                capture2.PosFrames = currFrame;
 
+                OpenCvSharp.Point myPoint = new OpenCvSharp.Point(550, 950);
+                Scalar fontColour = new Scalar(112255);
+
+                // Different processes for single frame and continuous playback
+                // Singleframe is used for moving to a specific frame and then pausing
+                if (singleFrame)
+                {
+                    initTimeline(capture2.FrameCount.ToString());
+                    Debug.WriteLine("Trying to draw single frame");
+                    capture2.Read(image2);
+                    image2.PutText(currTrial, myPoint, HersheyFonts.HersheyComplex, 2, fontColour, 4);
+                    updateTimeline(capture2.PosFrames);
+                    bw.ReportProgress(0, image2);
+                    singleFrame = false;
+                    System.Threading.Thread.Sleep(150);
+                    return;
+                }
+
+
+                while (isPlaying)
+                {
+                    if (capture2.Read(image2))
+                    {
+                        image2.PutText(currTrial, myPoint, HersheyFonts.HersheyComplex, 2, fontColour, 4);
                         updateTimeline(capture2.PosFrames);
                         bw.ReportProgress(0, image2);
                         System.Threading.Thread.Sleep(interval);
                     }
                 }
-                else
-                {
-                    bw.ReportProgress(0, image2);
-                    System.Threading.Thread.Sleep(interval);
-                }
+
             }
 
 
         }
-
+        // Worker action for video 2
         private void worker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             Mat image2 = (Mat)e.UserState;
 
-            if (!isPlaying) return;
+            //if (!isPlaying) return;
             if (camSelect2.Checked)
             {
                 video2picbox.Image = adjustBrightness(resizeImg(image2, video2picbox));
+                video2picbox.Refresh();
             }
         }
 
-
+        // Load the outputs from the current project, uses the task name so we can load the related video files
         void loadOutputs()
         {
             DirectoryInfo dinfo = new DirectoryInfo(Properties.Settings.Default.LastProject + "\\Output");
@@ -260,7 +286,7 @@ namespace LincolnTest
                 keysTextBox.AppendText(setting.Name + " : " + ScoreKB.Default[setting.Name] + Environment.NewLine);
             }
         }
-
+        // Process the key presses for marking the look direction
         private void markLook(string direction)
         {
             foreach (ListViewItem item in eventListView.Items)
@@ -288,34 +314,7 @@ namespace LincolnTest
             }
             // Change to save file refreshEvents(lines);
         }
-
-        //private void updateTime(string myTime)
-        //{
-        //    if (!isPlaying) { return; }
-
-        //    if (label1.InvokeRequired)
-        //    {
-        //        var d = new SafeCallDelegate(updateTime);
-        //        try
-        //        {
-        //            label1.Invoke(d, new object[] { myTime });
-        //        }
-        //        catch
-        //        {
-
-        //        }
-        //    }
-        //    else
-        //    {
-        //            label1.Text = myTime;
-        //    }
-        //}
-
-        //private void initTimelineEvent(object sender, EventArgs e)
-        //{
-        //    //initTimeline(video1.FrameCount.ToString());
-        //}
-
+        // Set up the timeline trackbar with the correct values
         private void initTimeline(string myTime)
         {
             if (timelineTrackBar.InvokeRequired)
@@ -335,9 +334,7 @@ namespace LincolnTest
                 timelineTrackBar.TickFrequency = 60;
             }
         }
-
-      
-
+        // Open the video files and the output file for the current task
         private void openCams(string task)
         {
             if (!Directory.Exists(Properties.Settings.Default.ExpPath))
@@ -355,7 +352,7 @@ namespace LincolnTest
             {
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
                 DialogResult result;
-
+                // TODO : Fix error message
                 result = MessageBox.Show("Video " + video1fullName + " not found", "Error", buttons);
                 return;
             }
@@ -393,11 +390,13 @@ namespace LincolnTest
 
         private void nextFButton_Click(object sender, EventArgs e)
         {
+            // TODO: Add next frame for new video functions
             //setFrame((int)frameUpDown.Value);
         }
 
        
-
+        // Resize the image to the zoom setting
+        // TODO: Realign doesn't work properly
         private Bitmap resizeImg(Mat imgIn, PictureBox picBox)
         {
             Mat tmpImg = new Mat();
@@ -409,7 +408,7 @@ namespace LincolnTest
 
             return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(tmpImg);
         }
-
+        // Uses a colour matrix to fake a brightness adjustment
         private Bitmap adjustBrightness(Bitmap tempBitmap)
         {
             float FinalValue = brightness;// / 255.0f;
@@ -452,7 +451,6 @@ namespace LincolnTest
 
         private void playButton_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("Button?");
             playPause();
         }
 
@@ -460,13 +458,11 @@ namespace LincolnTest
         {
             if (isPlaying) // if is playing
             {
-                Debug.WriteLine("Pausing");
                 //videoTimer.Enabled = false;
                 isPlaying = false;
             }
             else // it's not playing?
             {
-                Debug.WriteLine("Playing");
                 isPlaying = true;
                 cam1Worker.RunWorkerAsync();
             }
@@ -475,6 +471,7 @@ namespace LincolnTest
 
         private void prevFButton_Click(object sender, EventArgs e)
         {
+            // TODO: Add previous frame for new video functions
             //setFrame((int)frameUpDown.Value * -1);
         }
 
@@ -485,7 +482,8 @@ namespace LincolnTest
             //    video1.PosFrames = video1.PosFrames - 1;
             //}
         }
-
+        // Check if saved before closing
+        // TODO: isSaved needs to be set
         private void Score_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!isSaved)
@@ -511,19 +509,8 @@ namespace LincolnTest
             aTimer.Close();
         }
 
-        private void OnTimeChange(object sender, EventArgs e)
-        {
-            timeChanged();
-        }
-
-        private void timeChanged()
-        {
-            // label1.Text = _mp.Time.ToString();
-            //updateTime(video1.PosFrames.ToString());
-            //updateTimeline(video1.PosFrames.ToString());
-            //myMS = 1 / _mp.Fps;
-        }
-
+        
+        // Update the timeline trackbar with the current frame
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
             label1.Text = "Frame: " + timelineTrackBar.Value;
@@ -532,24 +519,6 @@ namespace LincolnTest
             currFrame = timelineTrackBar.Value;
         }
 
-        private void contrastTrackBar_Scroll(object sender, EventArgs e)
-        {
-            //_mp.SetAdjustInt(VideoAdjustOption.Enable, 1);
-            //float contrast = (float)contrastTrackBar.Value / 100;
-            //_mp.SetAdjustFloat(VideoAdjustOption.Contrast, contrast);
-        }
-
-        private void gammaTrackBar_Scroll(object sender, EventArgs e)
-        {
-            //_mp.SetAdjustInt(VideoAdjustOption.Enable, 1);
-            //float contrast = (float)gammaTrackBar.Value / 100;
-            //_mp.SetAdjustFloat(VideoAdjustOption.Contrast, contrast);
-        }
-
-        private void timelineTrackBar_Scroll(object sender, EventArgs e)
-        {
-
-        }
 
         private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -637,28 +606,24 @@ namespace LincolnTest
         }
 
 
-
+        // Override key presses for marking the look direction
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Left)
             {
-                // Process keys
                 markLook("Left");
                 return true;
             }
             if (keyData == Keys.Right)
             {
-                // Process keys
                 markLook("Right");
                 return true;
             }
             if (keyData == Keys.Down)
             {
-                // Process keys
                 markLook("Other");
                 return true;
             }
-
             if (keyData == Keys.Up)
             {
                 return true;
@@ -690,6 +655,9 @@ namespace LincolnTest
             zoomModifier = 0.5f;
 
             camSelect2.Checked = true;
+
+            singleFrame = true;
+            cam2Worker.RunWorkerAsync();
         }
 
         private void button2_Click(object sender, EventArgs e)

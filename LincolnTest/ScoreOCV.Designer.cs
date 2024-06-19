@@ -125,7 +125,6 @@ namespace LincolnTest
             this.timelineTrackBar.Size = new System.Drawing.Size(720, 45);
             this.timelineTrackBar.TabIndex = 7;
             this.timelineTrackBar.Value = 1;
-            this.timelineTrackBar.Scroll += new System.EventHandler(this.timelineTrackBar_Scroll);
             this.timelineTrackBar.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             this.timelineTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.timelineTrackBar_MouseUp);
             // 
