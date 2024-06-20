@@ -106,7 +106,7 @@ namespace LincolnTest
             return "none";
         }
 
-        public async Task ExampleAsync(string timings, string filename)
+        public async Task SaveTimingsAsync(string timings, string filename)
         {
             await Task.Run(() =>
             {

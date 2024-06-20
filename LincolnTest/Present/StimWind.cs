@@ -289,7 +289,7 @@ namespace LincolnTest
             IniFile MyIni = new IniFile(Properties.Settings.Default.ExpPath + "/project.ini");
             MyIni.Write("ScoreFile", filename);
 
-            System.Threading.Tasks.Task writefile = myUtils.ExampleAsync(txt, filename);
+            System.Threading.Tasks.Task writefile = myUtils.SaveTimingsAsync(txt, filename);
             await writefile;
 
             DialogResult result;

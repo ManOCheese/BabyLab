@@ -25,7 +25,6 @@ namespace LincolnTest
         string[] scoreFiles;
         string[] presentFiles;
 
-
         int cutoff = 300 / 60;
 
         List<string> data = new List<string>();

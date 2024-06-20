@@ -60,7 +60,7 @@ namespace LincolnTest
     }
 
 
-    
+
     class CreateXML
     {
         string currFileName;
@@ -125,8 +125,8 @@ namespace LincolnTest
                     XmlText text;
 
                     XmlElement element = doc.CreateElement(string.Empty, fieldname, string.Empty);
-                    
-                    if(valueOfField != null)
+
+                    if (valueOfField != null)
                     {
                         text = doc.CreateTextNode(valueOfField.ToString());
                     }
@@ -134,7 +134,7 @@ namespace LincolnTest
                     {
                         text = doc.CreateTextNode("");
                     }
-                    
+
                     element.AppendChild(text);
                     element1.AppendChild(element);
                 }
@@ -146,7 +146,7 @@ namespace LincolnTest
             return true;
         }
 
-       
+
 
         //Update existing block
 
@@ -196,7 +196,7 @@ namespace LincolnTest
             return true;
         }
 
-        
+
 
 
         // For fixing bad files and updating existing ones if we add more options
@@ -215,7 +215,7 @@ namespace LincolnTest
         {
             XmlElement trialElement = (XmlElement)trialsRead[trialNum];
 
-            Console.WriteLine("Saving: " + trialElement["partCode"].InnerText + " with trial: " + trialInfo.partCode + " with Stims: " + trialInfo.stimulusList.ToString()) ;
+            Console.WriteLine("Saving: " + trialElement["partCode"].InnerText + " with trial: " + trialInfo.partCode + " with Stims: " + trialInfo.stimulusList.ToString());
             bool noNodes = false;
 
             trialElement["partCode"].InnerText = trialInfo.partCode;
@@ -231,12 +231,13 @@ namespace LincolnTest
 
                 int index = 0;
 
-                try {
+                try
+                {
                     trialsRead[trialNum].SelectNodes("VisualStimuli");
                 }
                 catch
                 {
-                    noNodes = true;                        
+                    noNodes = true;
                 }
 
                 if (!noNodes)
@@ -316,7 +317,7 @@ namespace LincolnTest
 
             trialsRead[selectedTrial].RemoveAll();
 
-            
+
             return true;
         }
 
@@ -430,12 +431,13 @@ namespace LincolnTest
 
         }
         // Returns the info for a trial
-        public TrialInfo getTrialInfo(int trialNum) { 
-        
+        public TrialInfo getTrialInfo(int trialNum)
+        {
+
             TrialInfo trialInfo = new TrialInfo();
 
             Debug.WriteLine(trialsRead[trialNum].InnerText);
-            
+
             XmlElement selectedTrial = (XmlElement)trialsRead[trialNum];
 
             trialInfo.partCode = selectedTrial["partCode"].InnerText;
@@ -448,10 +450,10 @@ namespace LincolnTest
             XmlNodeList stims = selectedTrial.SelectNodes("VisualStimuli");
             for (int i = stims.Count - 1; i >= 0; i--)
             {
-                    tempStimsL.Add(stims[i].InnerText);
-                    tempStimsR.Add(stims[i].Attributes["RightImage"].Value);
-                    tempAudioStims.Add(stims[i].Attributes["audioStimulus"].Value);
-                    tempAudioStimSide.Add(stims[i].Attributes["audioStimulusCB"].Value);
+                tempStimsL.Add(stims[i].InnerText);
+                tempStimsR.Add(stims[i].Attributes["RightImage"].Value);
+                tempAudioStims.Add(stims[i].Attributes["audioStimulus"].Value);
+                tempAudioStimSide.Add(stims[i].Attributes["audioStimulusCB"].Value);
             }
 
             // Reverse order, because .Add adds at the beginning
@@ -469,7 +471,7 @@ namespace LincolnTest
             trialInfo.isScored = selectedTrial["isScored"].InnerText == "true";
 
             return trialInfo;
-            
+
         }
         // Returns the info for a block
         public BlockInfo getBlockInfo(int blockNum)
