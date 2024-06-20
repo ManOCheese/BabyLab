@@ -544,6 +544,7 @@ namespace LincolnTest
             //setFrame(desiredFrame);
             //_mp.Time = int.Parse(eventListView.SelectedItems[0].SubItems[1].Text);
 
+            // Only update the timeline if the video is not playing
             if (!cam1Worker.IsBusy)
             {
                 singleFrame = true;

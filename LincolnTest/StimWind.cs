@@ -52,7 +52,6 @@ namespace LincolnTest
 
         public Present parentWindow;
 
-
         private SoundPlayer audioPlayer;
 
         Screen screen;
@@ -61,6 +60,7 @@ namespace LincolnTest
         TimeStampInfo info = new TimeStampInfo();
         Stopwatch stopwatch = new Stopwatch();
 
+        // Local variables used to store stimuli, audio and attention image 
         string[] listLImage;
         string[] listRImage;
         string[] listAudioStims;
@@ -99,6 +99,7 @@ namespace LincolnTest
         private void setupScreen()
         {
             // Create stimuli window on 2nd screen and calculate sizes and positions for stimuli
+            // Resizes images to scale with screen resolution
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = this.Size;
 
@@ -118,7 +119,6 @@ namespace LincolnTest
             this.SetBounds(bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
             int imageHeight = bounds.Height / 5;
-            //int imageWidth = bounds.Width / 5;
             int imageWidth = (int)((double)imageHeight * 1.6);
 
             rightStimPic.Size = new System.Drawing.Size(imageWidth, imageHeight);
@@ -134,6 +134,8 @@ namespace LincolnTest
 
             return windowColour;
         }
+
+        // Checks that stimuli exist and sets up the experiment
         public void SetupExperiment()
         {
             index = 0;
@@ -160,8 +162,6 @@ namespace LincolnTest
 
         public bool StartExperiment()
         {
-            //if (!trialStarted) return false;
-
             label1.Text = "";
             attentionPicBox.ImageLocation = blockInfo.attnImage;
 
@@ -193,21 +193,18 @@ namespace LincolnTest
             maxTrialDurTimer = new System.Timers.Timer(int.Parse(blockInfo.maxTrialDuration)); // Delay before ending trial
             autoPlayTimer = new System.Timers.Timer(1500);
 
-            // Hook up the Elapsed events for the timer
+            // Hook up the Elapsed events for the timers
             vonsetTimer.Elapsed += showStims;
             vonsetTimer.AutoReset = false;
             vonsetTimer.Stop();
-            // vonsetTimer.Enabled = true;
 
             aonsetTimer.Elapsed += playAudio;
             aonsetTimer.AutoReset = false;
             aonsetTimer.Stop();
-            // aonsetTimer.Enabled = true;
 
             maxTrialDurTimer.Elapsed += endTrial;
             maxTrialDurTimer.AutoReset = false;
             maxTrialDurTimer.Stop();
-            // maxTrialDurTimer.Enabled = true;
 
             autoPlayTimer.Elapsed += autoNextTrial;
             autoPlayTimer.AutoReset = false;

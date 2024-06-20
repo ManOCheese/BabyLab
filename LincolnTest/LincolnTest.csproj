@@ -172,12 +172,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analyse.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Analyse.Designer.cs">
-      <DependentUpon>Analyse.cs</DependentUpon>
-    </Compile>
     <Compile Include="Basler\BaslerCam.cs" />
     <Compile Include="Create\AttnGetterWindow.cs">
       <SubType>Form</SubType>
@@ -186,12 +180,6 @@
       <DependentUpon>AttnGetterWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MicroStopWatch.cs" />
-    <Compile Include="counterBalance.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="counterBalance.Designer.cs">
-      <DependentUpon>counterBalance.cs</DependentUpon>
-    </Compile>
     <Compile Include="MainMenu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -234,12 +222,6 @@
     <Compile Include="Present\viewSettings.Designer.cs">
       <DependentUpon>viewSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProjectMan.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProjectMan.Designer.cs">
-      <DependentUpon>ProjectMan.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\PresentKB.cs" />
     <Compile Include="Properties\PresentKB.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -258,10 +240,10 @@
       <DependentUpon>randOptions.cs</DependentUpon>
     </Compile>
     <Compile Include="ReadXML.cs" />
-    <Compile Include="Create.cs">
+    <Compile Include="Create\Create.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Create.Designer.cs">
+    <Compile Include="Create\Create.Designer.cs">
       <DependentUpon>Create.cs</DependentUpon>
     </Compile>
     <Compile Include="ScoreOCV.cs">
@@ -269,12 +251,6 @@
     </Compile>
     <Compile Include="ScoreOCV.Designer.cs">
       <DependentUpon>ScoreOCV.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Score.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Score.Designer.cs">
-      <DependentUpon>Score.cs</DependentUpon>
     </Compile>
     <Compile Include="ScoreKB.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -300,10 +276,7 @@
       <DependentUpon>NewBlockTextInput.cs</DependentUpon>
     </Compile>
     <Compile Include="utils\utils.cs" />
-    <EmbeddedResource Include="counterBalance.resx">
-      <DependentUpon>counterBalance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Create.resx">
+    <EmbeddedResource Include="Create\Create.resx">
       <DependentUpon>Create.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Create\AttnGetterWindow.resx">
@@ -330,17 +303,11 @@
     <EmbeddedResource Include="Present\viewSettings.resx">
       <DependentUpon>viewSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProjectMan.resx">
-      <DependentUpon>ProjectMan.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="randOptions.resx">
       <DependentUpon>randOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ScoreOCV.resx">
       <DependentUpon>ScoreOCV.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Score.resx">
-      <DependentUpon>Score.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DataAnalyser\DataWindow.resx">
       <DependentUpon>DataWindow.cs</DependentUpon>

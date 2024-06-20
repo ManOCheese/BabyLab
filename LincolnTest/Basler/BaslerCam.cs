@@ -38,9 +38,6 @@ namespace LincolnTest
         public bool writing = false;
 
         // Camera parameters
-        public int axis_x;
-        public int axis_y;
-        public int axis_scale;
 
         public string camip;
         public string cam_name;
