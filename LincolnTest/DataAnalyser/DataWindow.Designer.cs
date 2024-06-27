@@ -57,6 +57,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.outputDGV = new System.Windows.Forms.DataGridView();
             this.trialUpDown = new System.Windows.Forms.NumericUpDown();
+            this.partNameLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.cutPointBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
@@ -367,11 +368,21 @@
             this.trialUpDown.TabIndex = 8;
             this.trialUpDown.ValueChanged += new System.EventHandler(this.trialUpDown_ValueChanged);
             // 
+            // partNameLabel
+            // 
+            this.partNameLabel.AutoSize = true;
+            this.partNameLabel.Location = new System.Drawing.Point(750, 30);
+            this.partNameLabel.Name = "partNameLabel";
+            this.partNameLabel.Size = new System.Drawing.Size(41, 13);
+            this.partNameLabel.TabIndex = 9;
+            this.partNameLabel.Text = "label12";
+            // 
             // DataWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1456, 596);
+            this.Controls.Add(this.partNameLabel);
             this.Controls.Add(this.trialUpDown);
             this.Controls.Add(this.outputDGV);
             this.Controls.Add(this.groupBox2);
@@ -431,5 +442,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataGridView outputDGV;
         private System.Windows.Forms.NumericUpDown trialUpDown;
+        private System.Windows.Forms.Label partNameLabel;
     }
 }

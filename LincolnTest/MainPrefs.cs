@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Basler.Pylon;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 
 namespace LincolnTest
 {
@@ -22,6 +24,8 @@ namespace LincolnTest
             InitializeComponent();
 
             vStimFolderText.Text = Properties.Settings.Default.stimPathVisual;
+            aStimFolderText.Text = Properties.Settings.Default.stimPathAudio;
+
             screenBox.Items.Add("None");
 
             foreach (var aScreen in Screen.AllScreens)
@@ -77,6 +81,39 @@ namespace LincolnTest
             {
                 aStimFolderText.Text = myOpenDialog.SelectedPath;
                 stimPathAudio = aStimFolderText.Text;
+            }
+        }
+
+        private void camScanButton_Click(object sender, EventArgs e)
+        {
+            List<ICameraInfo> allDeviceInfos = CameraFinder.Enumerate(DeviceType.GigE);
+
+            if (allDeviceInfos.Count == 0)
+            {
+                MessageBox.Show("No GigE cameras present.");
+            }
+
+            foreach (ICameraInfo cameraInfo in allDeviceInfos)
+            {
+                MessageBox.Show("Found camera: " + cameraInfo[CameraInfoKey.DeviceIpAddress]);
+            }
+        }
+         
+        private void swapCamButton_Click(object sender, EventArgs e)
+        {
+            string temp = leftIPTextBox.Text;
+            leftIPTextBox.Text = rightIPTextBox.Text;
+            rightIPTextBox.Text = temp;
+        }
+
+        private void camPreviewButton_Click(object sender, EventArgs e)
+        {
+            BaslerCam camera;
+            camera = new BaslerCam(leftIPTextBox.Text);
+
+            if (camera.found)
+            {
+                camPreviewPictureBox.Image =  camera.aquireSingleFrame();
             }
         }
     }

@@ -168,7 +168,7 @@ namespace LincolnTest
             trialListBox.Items.Clear();
 
             // Get reader to read the blocks
-            List<string> trials = myXML.getTrialList(expListBox.Text, blockListBox.Text);
+            List<string> trials = myXML.getTrialList( blockListBox.Text);
 
             if (trials.Count == 0) return;
 

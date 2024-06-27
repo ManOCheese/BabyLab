@@ -103,6 +103,35 @@ namespace LincolnTest
             }
         }
 
+        public Bitmap aquireSingleFrame()
+        {
+            camera.Open();
+            camera.Parameters[PLCamera.AcquisitionFrameRateEnable].SetValue(true);
+            camera.Parameters[PLCamera.CenterX].SetValue(true);
+            camera.Parameters[PLCamera.CenterY].SetValue(true);
+            camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(22200);
+
+            camera.StreamGrabber.Start();
+
+            grabResult = camera.StreamGrabber.RetrieveResult(5000, TimeoutHandling.ThrowException);
+
+            using (grabResult)
+            {
+                if (grabResult.GrabSucceeded)
+                {
+                    // convert image from basler IImage to OpenCV Mat
+                    Mat img = convertIImage2Mat(grabResult);
+                    // convert image from BayerBG to RGB
+                    Cv2.CvtColor(img, img, ColorConversionCodes.BayerBG2GRAY);
+
+                    bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(img);
+                    img.Dispose();
+                }
+            }
+
+            return bitmap;
+        }
+
         private void th_grab(int height = 0, int width = 0, int snap_wait = 500)
         {
             try

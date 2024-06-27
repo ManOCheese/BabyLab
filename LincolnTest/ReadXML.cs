@@ -415,13 +415,16 @@ namespace LincolnTest
             return blockList;
         }
         // Return a list of trials for a block from the loaded file
-        public List<string> getTrialList(string fileName, string blockName)
+        public List<string> getTrialList(string blockName)
         {
-            currFileName = fileName;
-
+            //currFileName = fileName;
+            
             List<string> trialList = new List<string>();
 
             trialsRead = root.SelectNodes("descendant::Trial[Block='" + blockName + "']");
+
+            Debug.WriteLine("Getting trials for block: " + blockName + "  and have found " + trialsRead.Count + " trials.");
+
             for (int i = 0; i < trialsRead.Count; i++)
             {
                 trialList.Add(trialsRead[i].FirstChild.InnerXml);
@@ -492,7 +495,7 @@ namespace LincolnTest
                     if (blockElement.SelectNodes(fieldname).Count > 0)
                     {
                         propertyinfo.SetValue(blockInfo, blockElement[fieldname].InnerText);
-                        Console.WriteLine(fieldname + "  with value  " + valueOfField + "  loaded.");
+                        // Console.WriteLine(fieldname + "  with value  " + valueOfField + "  loaded.");
                     }
                     else
                     {

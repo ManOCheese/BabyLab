@@ -42,6 +42,15 @@ namespace LincolnTest
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.aStimFolderText = new System.Windows.Forms.TextBox();
+            this.leftCamIPLabel = new System.Windows.Forms.Label();
+            this.rightCamIPLabel = new System.Windows.Forms.Label();
+            this.leftIPTextBox = new System.Windows.Forms.TextBox();
+            this.rightIPTextBox = new System.Windows.Forms.TextBox();
+            this.camScanButton = new System.Windows.Forms.Button();
+            this.swapCamButton = new System.Windows.Forms.Button();
+            this.camPreviewButton = new System.Windows.Forms.Button();
+            this.camPreviewPictureBox = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.camPreviewPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -107,12 +116,12 @@ namespace LincolnTest
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(526, 164);
-            this.okButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.okButton.Location = new System.Drawing.Point(600, 300);
+            this.okButton.Margin = new System.Windows.Forms.Padding(2);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(104, 31);
             this.okButton.TabIndex = 9;
-            this.okButton.Text = "Ok";
+            this.okButton.Text = "Save";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
@@ -142,11 +151,92 @@ namespace LincolnTest
             this.aStimFolderText.Size = new System.Drawing.Size(479, 20);
             this.aStimFolderText.TabIndex = 10;
             // 
+            // leftCamIPLabel
+            // 
+            this.leftCamIPLabel.AutoSize = true;
+            this.leftCamIPLabel.Location = new System.Drawing.Point(35, 210);
+            this.leftCamIPLabel.Name = "leftCamIPLabel";
+            this.leftCamIPLabel.Size = new System.Drawing.Size(77, 13);
+            this.leftCamIPLabel.TabIndex = 13;
+            this.leftCamIPLabel.Text = "Left Camera IP";
+            // 
+            // rightCamIPLabel
+            // 
+            this.rightCamIPLabel.AutoSize = true;
+            this.rightCamIPLabel.Location = new System.Drawing.Point(35, 286);
+            this.rightCamIPLabel.Name = "rightCamIPLabel";
+            this.rightCamIPLabel.Size = new System.Drawing.Size(84, 13);
+            this.rightCamIPLabel.TabIndex = 14;
+            this.rightCamIPLabel.Text = "Right Camera IP";
+            // 
+            // leftIPTextBox
+            // 
+            this.leftIPTextBox.Location = new System.Drawing.Point(38, 226);
+            this.leftIPTextBox.Name = "leftIPTextBox";
+            this.leftIPTextBox.Size = new System.Drawing.Size(100, 20);
+            this.leftIPTextBox.TabIndex = 15;
+            this.leftIPTextBox.Text = "169.254.72.175";
+            // 
+            // rightIPTextBox
+            // 
+            this.rightIPTextBox.Location = new System.Drawing.Point(38, 302);
+            this.rightIPTextBox.Name = "rightIPTextBox";
+            this.rightIPTextBox.Size = new System.Drawing.Size(100, 20);
+            this.rightIPTextBox.TabIndex = 16;
+            this.rightIPTextBox.Text = "169.254.78.175";
+            // 
+            // camScanButton
+            // 
+            this.camScanButton.Location = new System.Drawing.Point(38, 333);
+            this.camScanButton.Name = "camScanButton";
+            this.camScanButton.Size = new System.Drawing.Size(75, 23);
+            this.camScanButton.TabIndex = 17;
+            this.camScanButton.Text = "Scan";
+            this.camScanButton.UseVisualStyleBackColor = true;
+            this.camScanButton.Click += new System.EventHandler(this.camScanButton_Click);
+            // 
+            // swapCamButton
+            // 
+            this.swapCamButton.Location = new System.Drawing.Point(38, 252);
+            this.swapCamButton.Name = "swapCamButton";
+            this.swapCamButton.Size = new System.Drawing.Size(75, 23);
+            this.swapCamButton.TabIndex = 18;
+            this.swapCamButton.Text = "^ Swap v";
+            this.swapCamButton.UseVisualStyleBackColor = true;
+            this.swapCamButton.Click += new System.EventHandler(this.swapCamButton_Click);
+            // 
+            // camPreviewButton
+            // 
+            this.camPreviewButton.Location = new System.Drawing.Point(144, 223);
+            this.camPreviewButton.Name = "camPreviewButton";
+            this.camPreviewButton.Size = new System.Drawing.Size(75, 23);
+            this.camPreviewButton.TabIndex = 19;
+            this.camPreviewButton.Text = "Preview";
+            this.camPreviewButton.UseVisualStyleBackColor = true;
+            this.camPreviewButton.Click += new System.EventHandler(this.camPreviewButton_Click);
+            // 
+            // camPreviewPictureBox
+            // 
+            this.camPreviewPictureBox.InitialImage = global::LincolnTest.Properties.Resources.horizline;
+            this.camPreviewPictureBox.Location = new System.Drawing.Point(246, 226);
+            this.camPreviewPictureBox.Name = "camPreviewPictureBox";
+            this.camPreviewPictureBox.Size = new System.Drawing.Size(239, 146);
+            this.camPreviewPictureBox.TabIndex = 20;
+            this.camPreviewPictureBox.TabStop = false;
+            // 
             // MainPrefs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(715, 203);
+            this.ClientSize = new System.Drawing.Size(715, 410);
+            this.Controls.Add(this.camPreviewPictureBox);
+            this.Controls.Add(this.camPreviewButton);
+            this.Controls.Add(this.swapCamButton);
+            this.Controls.Add(this.camScanButton);
+            this.Controls.Add(this.rightIPTextBox);
+            this.Controls.Add(this.leftIPTextBox);
+            this.Controls.Add(this.rightCamIPLabel);
+            this.Controls.Add(this.leftCamIPLabel);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.aStimFolderText);
@@ -162,6 +252,7 @@ namespace LincolnTest
             this.Name = "MainPrefs";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainPrefs";
+            ((System.ComponentModel.ISupportInitialize)(this.camPreviewPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -180,5 +271,13 @@ namespace LincolnTest
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox aStimFolderText;
+        private System.Windows.Forms.Label leftCamIPLabel;
+        private System.Windows.Forms.Label rightCamIPLabel;
+        private System.Windows.Forms.TextBox leftIPTextBox;
+        private System.Windows.Forms.TextBox rightIPTextBox;
+        private System.Windows.Forms.Button camScanButton;
+        private System.Windows.Forms.Button swapCamButton;
+        private System.Windows.Forms.Button camPreviewButton;
+        private System.Windows.Forms.PictureBox camPreviewPictureBox;
     }
 }

@@ -19,11 +19,10 @@ namespace LincolnTest
 {
     public partial class DataWindow : Form
     {
+        // Data variables
         string scoredPath;
-        string outPath;
-
         string[] scoreFiles;
-        string[] presentFiles;
+        string currBlock;
 
         int cutoff = 1500;
 
@@ -40,7 +39,9 @@ namespace LincolnTest
             outputDGV.Columns.Add("Look", "Look");
             outputDGV.Columns.Add("Length", "Length");
             outputDGV.Columns.Add("isPre", "isPre");
-            outputDGV.Columns.Add("Trial", "Trial");
+            outputDGV.Columns.Add("LImage", "Left Image");
+            outputDGV.Columns.Add("RImage", "Right Image");
+            outputDGV.Columns.Add("Side", "Side");
 
             loadOutputs();
         }
@@ -53,19 +54,26 @@ namespace LincolnTest
             {
                 dataFilesList.Items.Add(System.IO.Path.GetFileName(file));
             }
-
-            outPath = Properties.Settings.Default.ExpPath + @"\output\";
-            presentFiles = Directory.GetFiles(outPath);
         }
+
 
         private void okButton_Click(object sender, EventArgs e)
         {
+            readFiles();
+            getImageInfo();
+        }
 
+        private void readFiles()
+        {
             int index = 0;
 
             foreach (string file in scoreFiles)
             {
-                Debug.WriteLine(file);
+                // Get participant name from file name
+                string partName = System.IO.Path.GetFileName(file).Split('_')[0];
+
+                Debug.WriteLine("Reading participant: " + partName);
+
                 const Int32 BufferSize = 128;
                 using (var scoreStream = File.OpenRead(file))
                 using (var scoreReader = new StreamReader(scoreStream, Encoding.UTF8, true, BufferSize))
@@ -74,17 +82,6 @@ namespace LincolnTest
                     while ((line = scoreReader.ReadLine()) != null)
                     {
                         data.Add(line);
-                    }
-                }
-
-                string presentFile = System.IO.Path.GetFileName(file).Split('_')[0] + ".out";
-                using (var fileStream = File.OpenRead(Properties.Settings.Default.ExpPath + @"\output\" + presentFile))
-                using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, BufferSize))
-                {
-                    String line;
-                    while ((line = streamReader.ReadLine()) != null)
-                    {
-                        presData.Add(line);
                     }
                 }
 
@@ -97,6 +94,9 @@ namespace LincolnTest
                 List<string[]> looks = new List<string[]>();
 
                 int trialStart = 0;
+                int postNamingWindow = 0;
+                bool isPostNamingWindow = false;
+
                 bool legitLook = false; // Ignores looks outside of trials
 
                 foreach (string line in data)
@@ -114,9 +114,10 @@ namespace LincolnTest
                     }
 
                     // Trial ends, add line, process the group and stop looks
-                    if (eventString.StartsWith("hideStims"))
+                    if (eventString.StartsWith("hideStims") || isPostNamingWindow)
                     {
                         lookData.Add(new LookData());
+                        lookData[index].partName = partName;
                         looks.Add(line.Split(','));
                         Int32.TryParse(msString.Split('.')[0], out int endTime);
                         int totalTime = endTime - trialStart;
@@ -149,8 +150,9 @@ namespace LincolnTest
                 data.Clear();
             }
 
-            trialUpDown.Maximum = lookData.Count-1;
+            trialUpDown.Maximum = lookData.Count - 1;
         }
+
         private void printlooks(List<string[]> looks)
         {
             Debug.WriteLine("===================");
@@ -196,8 +198,6 @@ namespace LincolnTest
 
                 Int32.TryParse(look[2].Split('.')[0], out int lookTime);
                 thisLook = look[0];
-                Debug.WriteLine(lookTime + " - " + trialStart);
-
 
                 if (lookTime <= trialStart + cutoff)
                 {
@@ -253,6 +253,8 @@ namespace LincolnTest
         {
             int index = (int)trialUpDown.Value;
 
+            partNameLabel.Text = lookData[index].partName;
+
             outputDGV.Rows.Clear();
 
             for (int i = 0; i < lookData[index].look.Count; i++)
@@ -262,20 +264,35 @@ namespace LincolnTest
                 outputDGV.Rows[i].Cells[0].Value = lookData[index].look[i];
                 outputDGV.Rows[i].Cells[1].Value = lookData[index].length[i];
                 outputDGV.Rows[i].Cells[2].Value = lookData[index].isPre[i].ToString();
-                outputDGV.Rows[i].Cells[3].Value = lookData[index].trial;
-                //outputDGV.Rows[i].Cells[4].Value = audioStimSide[i];
+                outputDGV.Rows[i].Cells[3].Value = lookData[index].leftImage;
+                outputDGV.Rows[i].Cells[4].Value = lookData[index].rightImage;
+                outputDGV.Rows[i].Cells[5].Value = lookData[index].side;
             }
+        }
+        public void getImageInfo()
+        {
+
+            CreateXML xml = new CreateXML();
+            BlockInfo blockInfo = new BlockInfo();
+
+            Debug.WriteLine("Getting trial info");
+            Debug.WriteLine(blockInfo.blockName);
         }
     }
 
+
     public class LookData
     {
+        public string partName { get; set; }
         public string trial { get; set; }
         public List<bool> isPre { get; set; }
         public List<string> look { get; set; }
         public List<int> length { get; set; }
         public string leftImage { get; set; }
         public string rightImage { get; set; }
+        public string side { get; set; }
+
+
 
         public LookData()
         {
@@ -285,16 +302,14 @@ namespace LincolnTest
             length = new List<int>();
             leftImage = "";
             rightImage = "";
+            side = "";
+            
         }
 
-        public void DisplayData()
-        {
-            foreach (var item in look)
-            {
+        
 
 
-            }
-        }
     }
 }
+
 
