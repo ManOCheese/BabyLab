@@ -394,7 +394,7 @@ namespace LincolnTest
         // Load the trial info from the array to the form
         private void populate_TrialInfo()
         {
-            trialInfo = myXML.getTrialInfo(trialListBox.SelectedIndex);
+            trialInfo = myXML.getTrialInfo(trialListBox.Text);
 
 
             trialTitleBox.Text = trialInfo.partCode;

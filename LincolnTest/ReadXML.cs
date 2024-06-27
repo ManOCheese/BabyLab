@@ -434,14 +434,22 @@ namespace LincolnTest
 
         }
         // Returns the info for a trial
-        public TrialInfo getTrialInfo(int trialNum)
+        public TrialInfo getTrialInfo(string trialName)
         {
 
             TrialInfo trialInfo = new TrialInfo();
+            XmlElement selectedTrial = null;
 
-            Debug.WriteLine(trialsRead[trialNum].InnerText);
+            foreach (XmlNode trial in trialsRead)
+            {
+                Debug.WriteLine(trial.SelectSingleNode("partCode").InnerText = trialName);
+                //if (trial.Attributes["partCode"].Value == trialName)
+                //{
+                //    selectedTrial = (XmlElement)trial;
+                //}
+            }
 
-            XmlElement selectedTrial = (XmlElement)trialsRead[trialNum];
+             //  = (XmlElement)trialsRead;
 
             trialInfo.partCode = selectedTrial["partCode"].InnerText;
 

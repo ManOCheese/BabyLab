@@ -206,7 +206,7 @@ namespace LincolnTest
             stimWindow.isAutoPlay = autoRunCheckBox.Checked;            
 
             // Send the selected trial to the stimwindow
-            stimWindow.trialInfo = myXML.getTrialInfo(trialListBox.SelectedIndex);
+            stimWindow.trialInfo =  myXML.getTrialInfo(trialListBox.SelectedValue.ToString());
             stimWindow.trialInfo.isPresented = true;
             myXML.updateTrial(trialListBox.SelectedIndex, stimWindow.trialInfo);
             stimWindow.blockInfo = myXML.getBlockInfo(blockListBox.SelectedIndex);
