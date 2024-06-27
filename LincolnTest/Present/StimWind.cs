@@ -170,7 +170,6 @@ namespace LincolnTest
                 Console.WriteLine("Block failed");
                 return false;
             }
-
             // Parse images from strings to file list
             listLImage = trialInfo.stimulusList.ToString().Split(',');
             Console.WriteLine("Images loaded: " + trialInfo.stimulusList.ToString());
@@ -297,7 +296,9 @@ namespace LincolnTest
             result = MessageBox.Show("Trials Complete", "Finished", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                //Hide();
+                trialStarted = false;
+                blockInfo = new BlockInfo();
+                trialInfo = new TrialInfo();
                 parentWindow.stimWindowClosed();
             }
 

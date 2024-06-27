@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Reflection;
 using System.Windows.Forms;
@@ -1220,7 +1221,7 @@ namespace LincolnTest
 
         private void delTrialButton_Click(object sender, EventArgs e)
         {
-            // TODO: Remove selected Trial
+            // Remove selected Trial
             myXML.removeTrial(trialListBox.SelectedIndex);
             refresh_trialListBox();
         }

@@ -9,6 +9,7 @@ using System.Xml;
 using System.Data;
 using System.Windows.Documents;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace LincolnTest
 {
@@ -146,6 +147,75 @@ namespace LincolnTest
             return true;
         }
 
+        // Add empty trial node
+        public bool addTrial(BlockInfo blockInfo, string trialName)
+        {
+            XmlNode root = doc.DocumentElement;
+            XmlElement element1 = null;
+
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace("bk", "urn:newbooks-schema");
+
+            XmlNodeList nodeList = root.SelectNodes("/Blocks/Block");
+
+            if(nodeList.Count == 0)
+            {
+                MessageBox.Show("No block found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            foreach (XmlNode node in nodeList)
+            {
+                Console.WriteLine("Block: " + node["blockName"].InnerText);
+                if (node["blockName"].InnerText == blockInfo.blockName)
+                {
+                    element1 = (XmlElement)node.AppendChild(doc.CreateElement("TrialSet"));
+                }
+            }
+            
+
+            //XmlElement element1 = doc.CreateElement(string.Empty, "TrialSet", string.Empty);
+
+            XmlElement element2 = doc.CreateElement(string.Empty, "partCode", string.Empty);
+            XmlText text2 = doc.CreateTextNode(trialName);
+            element2.AppendChild(text2);
+            element1.AppendChild(element2);
+
+            XmlElement element3 = doc.CreateElement(string.Empty, "Block", string.Empty);
+            XmlText text3 = doc.CreateTextNode(blockInfo.blockName);
+            element3.AppendChild(text3);
+            element1.AppendChild(element3);
+
+            XmlElement element4 = doc.CreateElement(string.Empty, "TrialsEnd", string.Empty);
+            XmlText text4 = doc.CreateTextNode("max");
+            element4.AppendChild(text4);
+            element1.AppendChild(element4);
+
+            XmlElement element5 = doc.CreateElement(string.Empty, "isScored", string.Empty);
+            XmlText text5 = doc.CreateTextNode("false");
+            element5.AppendChild(text5);
+            element1.AppendChild(element5); 
+
+            XmlElement element6 = doc.CreateElement(string.Empty, "isPresented", string.Empty);
+            XmlText text6 = doc.CreateTextNode("false");
+            element6.AppendChild(text6);
+            element1.AppendChild(element6);
+            
+            XmlElement element7 = doc.CreateElement(string.Empty, "partDOB", string.Empty);
+            XmlText text7 = doc.CreateTextNode("na");
+            element7.AppendChild(text7);
+            element1.AppendChild(element7);
+
+            element7 = doc.CreateElement(string.Empty, "partGender", string.Empty);
+            text7 = doc.CreateTextNode("Other");
+            element7.AppendChild(text7);
+            element1.AppendChild(element7);
+
+            // doc.DocumentElement.AppendChild(element1);
+
+            doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
+            return true;
+        }
 
 
         //Update existing block
@@ -181,7 +251,7 @@ namespace LincolnTest
                     var valueOfField = propertyinfo.GetValue(blockInfo);
                     if (valueOfField == null)
                     {
-                        MessageBox.Show("Some text", "Some partCode", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Property missing", "Some partCode", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     }
                     var fieldname = propertyinfo.Name;
@@ -213,6 +283,10 @@ namespace LincolnTest
         // Update existing trial
         public bool updateTrial(int trialNum, TrialInfo trialInfo)
         {
+            if(trialNum< 0)
+            {
+                return false;
+            }
             XmlElement trialElement = (XmlElement)trialsRead[trialNum];
 
             Console.WriteLine("Saving: " + trialElement["partCode"].InnerText + " with trial: " + trialInfo.partCode + " with Stims: " + trialInfo.stimulusList.ToString());
@@ -221,6 +295,8 @@ namespace LincolnTest
             trialElement["partCode"].InnerText = trialInfo.partCode;
             trialElement["isScored"].InnerText = trialInfo.isScored.ToString().ToLower();
             trialElement["isPresented"].InnerText = trialInfo.isPresented.ToString().ToLower();
+            trialElement["partDOB"].InnerText = trialInfo.partDOB.ToString().ToLower();
+            trialElement["partGender"].InnerText = trialInfo.partGender.ToString().ToLower();
 
             if (trialInfo.stimulusList != "")
             {
@@ -258,7 +334,6 @@ namespace LincolnTest
                     stimNode.SetAttribute("RightImage", stimsR[index]);
                     stimNode.SetAttribute("audioStimulus", audioStims[index]);
                     stimNode.SetAttribute("audioStimulusCB", audioStimsSide[index]);
-                    stimNode.SetAttribute("partDOB", trialInfo.partDOB);
                     index++;
                 }
 
@@ -274,48 +349,13 @@ namespace LincolnTest
             return true;
         }
 
-        // Add empty trial node
-        public bool addTrial(BlockInfo blockInfo, string trialName)
-        {
-            XmlNode root = doc.DocumentElement;
-            XmlNodeList nodeList = root.SelectNodes("descendant::Trial[Block='" + blockInfo.blockName + "']");
-
-            XmlElement element1 = doc.CreateElement(string.Empty, "Trial", string.Empty);
-
-            XmlElement element2 = doc.CreateElement(string.Empty, "partCode", string.Empty);
-            XmlText text2 = doc.CreateTextNode(trialName);
-            element2.AppendChild(text2);
-            element1.AppendChild(element2);
-
-            XmlElement element3 = doc.CreateElement(string.Empty, "Block", string.Empty);
-            XmlText text3 = doc.CreateTextNode(blockInfo.blockName);
-            element3.AppendChild(text3);
-            element1.AppendChild(element3);
-
-            XmlElement element4 = doc.CreateElement(string.Empty, "TrialsEnd", string.Empty);
-            XmlText text4 = doc.CreateTextNode("max");
-            element4.AppendChild(text4);
-            element1.AppendChild(element4);
-
-            XmlElement element5 = doc.CreateElement(string.Empty, "isScored", string.Empty);
-            XmlText text5 = doc.CreateTextNode("false");
-            element5.AppendChild(text5);
-            element1.AppendChild(element5);
-
-            XmlElement element6 = doc.CreateElement(string.Empty, "isPresented", string.Empty);
-            XmlText text6 = doc.CreateTextNode("false");
-            element6.AppendChild(text6);
-            element1.AppendChild(element6);
-
-            doc.DocumentElement.AppendChild(element1);
-            doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
-            return true;
-        }
+        
 
         public bool removeTrial(int selectedTrial)
         {
 
             trialsRead[selectedTrial].RemoveAll();
+            trialsRead[selectedTrial].ParentNode.RemoveChild(trialsRead[selectedTrial]);
 
 
             return true;
@@ -391,6 +431,7 @@ namespace LincolnTest
             try
             {
                 doc.Load(Properties.Settings.Default.ExpPath + @"\" + fileName);
+                currFileName = fileName;
             }
             catch
             {
@@ -421,7 +462,7 @@ namespace LincolnTest
             
             List<string> trialList = new List<string>();
 
-            trialsRead = root.SelectNodes("descendant::Trial[Block='" + blockName + "']");
+            trialsRead = root.SelectNodes("descendant::TrialSet[Block='" + blockName + "']");
 
             Debug.WriteLine("Getting trials for block: " + blockName + "  and have found " + trialsRead.Count + " trials.");
 
@@ -440,13 +481,16 @@ namespace LincolnTest
             TrialInfo trialInfo = new TrialInfo();
             XmlElement selectedTrial = null;
 
+
             foreach (XmlNode trial in trialsRead)
             {
-                Debug.WriteLine(trial.SelectSingleNode("partCode").InnerText = trialName);
-                //if (trial.Attributes["partCode"].Value == trialName)
-                //{
-                //    selectedTrial = (XmlElement)trial;
-                //}
+                Debug.WriteLine("Node: " + trial.SelectSingleNode("partCode").InnerText);
+
+
+                if (trial.SelectSingleNode("partCode").InnerText == trialName)
+                {
+                    selectedTrial = (XmlElement)trial;
+                }
             }
 
              //  = (XmlElement)trialsRead;

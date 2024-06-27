@@ -82,8 +82,6 @@ namespace LincolnTest
             this.groupBox1.Controls.Add(this.GMale);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 27);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 210);
@@ -93,7 +91,7 @@ namespace LincolnTest
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(34, 79);
+            this.dateTimePicker1.Location = new System.Drawing.Point(48, 51);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(133, 20);
             this.dateTimePicker1.TabIndex = 10;
@@ -102,7 +100,7 @@ namespace LincolnTest
             // GOther
             // 
             this.GOther.AutoSize = true;
-            this.GOther.Location = new System.Drawing.Point(70, 163);
+            this.GOther.Location = new System.Drawing.Point(84, 135);
             this.GOther.Name = "GOther";
             this.GOther.Size = new System.Drawing.Size(51, 17);
             this.GOther.TabIndex = 6;
@@ -113,7 +111,7 @@ namespace LincolnTest
             // GFemale
             // 
             this.GFemale.AutoSize = true;
-            this.GFemale.Location = new System.Drawing.Point(70, 140);
+            this.GFemale.Location = new System.Drawing.Point(84, 112);
             this.GFemale.Name = "GFemale";
             this.GFemale.Size = new System.Drawing.Size(59, 17);
             this.GFemale.TabIndex = 5;
@@ -124,7 +122,7 @@ namespace LincolnTest
             // GMale
             // 
             this.GMale.AutoSize = true;
-            this.GMale.Location = new System.Drawing.Point(70, 117);
+            this.GMale.Location = new System.Drawing.Point(84, 89);
             this.GMale.Name = "GMale";
             this.GMale.Size = new System.Drawing.Size(48, 17);
             this.GMale.TabIndex = 4;
@@ -135,7 +133,7 @@ namespace LincolnTest
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 117);
+            this.label3.Location = new System.Drawing.Point(20, 89);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(42, 13);
             this.label3.TabIndex = 3;
@@ -144,7 +142,7 @@ namespace LincolnTest
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 63);
+            this.label2.Location = new System.Drawing.Point(19, 35);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(66, 13);
             this.label2.TabIndex = 2;
@@ -152,7 +150,7 @@ namespace LincolnTest
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(95, 24);
+            this.textBox1.Location = new System.Drawing.Point(168, 518);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(71, 20);
             this.textBox1.TabIndex = 1;
@@ -160,7 +158,7 @@ namespace LincolnTest
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 27);
+            this.label1.Location = new System.Drawing.Point(79, 521);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 13);
             this.label1.TabIndex = 0;
@@ -432,14 +430,16 @@ namespace LincolnTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1276, 460);
+            this.ClientSize = new System.Drawing.Size(1276, 462);
             this.Controls.Add(this.shuffleCheckBox);
             this.Controls.Add(this.expListBox);
             this.Controls.Add(this.trialListBox);
             this.Controls.Add(this.blockListBox);
             this.Controls.Add(this.showCamButton);
             this.Controls.Add(this.hideCamButton);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.scanCamButton);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.statusLabel1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);

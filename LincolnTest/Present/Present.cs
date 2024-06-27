@@ -59,8 +59,8 @@ namespace LincolnTest
         {
             InitializeComponent();
             PopulateExpListBox();
-            UpdateKeysText();          
-            
+            UpdateKeysText();
+
         }
 
         private bool setupCameras()
@@ -97,7 +97,7 @@ namespace LincolnTest
         {
             showCamButton.Enabled = false;
             hideCamButton.Enabled = true;
-                    
+
             camera.conShot();
             camera2.conShot();
 
@@ -151,12 +151,12 @@ namespace LincolnTest
             blockListBox.Items.Clear();
 
             // Get reader to read the blocks
-            List< string> blocks = myXML.getBlockList(expListBox.Text);
+            List<string> blocks = myXML.getBlockList(expListBox.Text);
 
             Debug.WriteLine("Read " + blocks.Count + " lines");
             if (blocks.Count == 0) return;
 
-            foreach(string block in blocks)
+            foreach (string block in blocks)
             {
                 blockListBox.Items.Add(block);
             }
@@ -168,7 +168,7 @@ namespace LincolnTest
             trialListBox.Items.Clear();
 
             // Get reader to read the blocks
-            List<string> trials = myXML.getTrialList( blockListBox.Text);
+            List<string> trials = myXML.getTrialList(blockListBox.Text);
 
             if (trials.Count == 0) return;
 
@@ -197,23 +197,25 @@ namespace LincolnTest
             if (setupCameras())
             {
                 startCameras();
-            }            
-
-            
+            }
 
             // Parent window is this window
             stimWindow.parentWindow = this;
-            stimWindow.isAutoPlay = autoRunCheckBox.Checked;            
+            stimWindow.isAutoPlay = autoRunCheckBox.Checked;
 
             // Send the selected trial to the stimwindow
-            stimWindow.trialInfo =  myXML.getTrialInfo(trialListBox.SelectedValue.ToString());
-            stimWindow.trialInfo.isPresented = true;
-            myXML.updateTrial(trialListBox.SelectedIndex, stimWindow.trialInfo);
+            int i = trialListBox.SelectedIndex;
+
             stimWindow.blockInfo = myXML.getBlockInfo(blockListBox.SelectedIndex);
+            stimWindow.trialInfo = myXML.getTrialInfo(trialListBox.Items[i].ToString());
+
+            stimWindow.trialInfo.isPresented = true;
+            stimWindow.trialInfo.partDOB  = dateTimePicker1.Value.ToString();
+            myXML.updateTrial(trialListBox.SelectedIndex, stimWindow.trialInfo);
 
             // Init the stim window and start it sending preview images back
             stimWindow.SetupExperiment();
-            stimWindow.DrawToBitmap(preview, rec );
+            stimWindow.DrawToBitmap(preview, rec);
             stimWindow.Show();
             stimWindow.isShuffled = shuffleCheckBox.Checked;
 
@@ -235,7 +237,7 @@ namespace LincolnTest
         // Update the experiment preview image
         private void refreshPreview(Object source, ElapsedEventArgs e)
         {
-            if(stimWindow == null)
+            if (stimWindow == null)
             {
                 return;
             }
@@ -276,14 +278,14 @@ namespace LincolnTest
                 }
             }
             else
-            {                
+            {
                 if (camera.grabResult != null && !cameraHidden)
                 {
                     if (statusLabel1.Text == "Offline")
                     {
                         statusLabel1.Text = "Online";
                     }
-                    cameraImageBox1.Image = camera.bitmap ;
+                    cameraImageBox1.Image = camera.bitmap;
                     cameraImageBox2.Image = camera2.bitmap;
                 }
             }
@@ -292,12 +294,13 @@ namespace LincolnTest
         // Called when the stim window is closed
         public void stimWindowClosed()
         {
-            
+
             stimWindow.Invoke((MethodInvoker)delegate
             {
                 // Hide the stim window and stop the cameras
                 this.startButton.Enabled = true;
                 stimWindow.Hide();
+                previewTimer.Stop();
                 camera.Stop();
                 camera2.Stop();
             });
@@ -324,7 +327,7 @@ namespace LincolnTest
         {
 
             keyFrame = camera.getKeyFrame();
-            
+
 
             return keyFrame;
         }
@@ -413,7 +416,7 @@ namespace LincolnTest
             this.BeginInvoke((MethodInvoker)(
             () => readyToStart()));
 
-            
+
         }
 
 
