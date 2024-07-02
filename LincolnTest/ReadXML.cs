@@ -10,6 +10,7 @@ using System.Data;
 using System.Windows.Documents;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Reflection.Emit;
 
 namespace LincolnTest
 {
@@ -158,7 +159,7 @@ namespace LincolnTest
 
             XmlNodeList nodeList = root.SelectNodes("/Blocks/Block");
 
-            if(nodeList.Count == 0)
+            if (nodeList.Count == 0)
             {
                 MessageBox.Show("No block found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -172,44 +173,55 @@ namespace LincolnTest
                     element1 = (XmlElement)node.AppendChild(doc.CreateElement("TrialSet"));
                 }
             }
-            
 
-            //XmlElement element1 = doc.CreateElement(string.Empty, "TrialSet", string.Empty);
+            XmlElement element;
+            XmlText text;
 
-            XmlElement element2 = doc.CreateElement(string.Empty, "partCode", string.Empty);
-            XmlText text2 = doc.CreateTextNode(trialName);
-            element2.AppendChild(text2);
-            element1.AppendChild(element2);
+            string[,] nodes = new string[,] { { "Block", blockInfo.blockName}, {"partCode", trialName}, {"TrialsEnd", "00" }, {"isScored", "false" }, {"isPresented", "false" }, {"partDOB", "1-1-1" }, {"partGender", "Other" } };
 
-            XmlElement element3 = doc.CreateElement(string.Empty, "Block", string.Empty);
-            XmlText text3 = doc.CreateTextNode(blockInfo.blockName);
-            element3.AppendChild(text3);
-            element1.AppendChild(element3);
+            for (int i = 0; i < nodes.GetLength(0); i++)
+            {
+                element = doc.CreateElement(string.Empty, nodes[i,0], string.Empty);
+                Debug.WriteLine("Adding node: " + nodes[i, 0]);
+                text = doc.CreateTextNode(nodes[i, 1]);
+                element.AppendChild(text);
+                element1.AppendChild(element);
+            }
 
-            XmlElement element4 = doc.CreateElement(string.Empty, "TrialsEnd", string.Empty);
-            XmlText text4 = doc.CreateTextNode("max");
-            element4.AppendChild(text4);
-            element1.AppendChild(element4);
+            //XmlElement element2 = doc.CreateElement(string.Empty, "partCode", string.Empty);
+            //XmlText text2 = doc.CreateTextNode(trialName);
+            //element2.AppendChild(text2);
+            //element1.AppendChild(element2);
 
-            XmlElement element5 = doc.CreateElement(string.Empty, "isScored", string.Empty);
-            XmlText text5 = doc.CreateTextNode("false");
-            element5.AppendChild(text5);
-            element1.AppendChild(element5); 
+            //XmlElement element3 = doc.CreateElement(string.Empty, "Block", string.Empty);
+            //XmlText text3 = doc.CreateTextNode(blockInfo.blockName);
+            //element3.AppendChild(text3);
+            //element1.AppendChild(element3);
 
-            XmlElement element6 = doc.CreateElement(string.Empty, "isPresented", string.Empty);
-            XmlText text6 = doc.CreateTextNode("false");
-            element6.AppendChild(text6);
-            element1.AppendChild(element6);
-            
-            XmlElement element7 = doc.CreateElement(string.Empty, "partDOB", string.Empty);
-            XmlText text7 = doc.CreateTextNode("na");
-            element7.AppendChild(text7);
-            element1.AppendChild(element7);
+            //XmlElement element4 = doc.CreateElement(string.Empty, "TrialsEnd", string.Empty);
+            //XmlText text4 = doc.CreateTextNode("max");
+            //element4.AppendChild(text4);
+            //element1.AppendChild(element4);
 
-            element7 = doc.CreateElement(string.Empty, "partGender", string.Empty);
-            text7 = doc.CreateTextNode("Other");
-            element7.AppendChild(text7);
-            element1.AppendChild(element7);
+            //XmlElement element5 = doc.CreateElement(string.Empty, "isScored", string.Empty);
+            //XmlText text5 = doc.CreateTextNode("false");
+            //element5.AppendChild(text5);
+            //element1.AppendChild(element5); 
+
+            //XmlElement element6 = doc.CreateElement(string.Empty, "isPresented", string.Empty);
+            //XmlText text6 = doc.CreateTextNode("false");
+            //element6.AppendChild(text6);
+            //element1.AppendChild(element6);
+
+            //XmlElement element7 = doc.CreateElement(string.Empty, "partDOB", string.Empty);
+            //XmlText text7 = doc.CreateTextNode("na");
+            //element7.AppendChild(text7);
+            //element1.AppendChild(element7);
+
+            //element7 = doc.CreateElement(string.Empty, "partGender", string.Empty);
+            //text7 = doc.CreateTextNode("Other");
+            //element7.AppendChild(text7);
+            //element1.AppendChild(element7);
 
             // doc.DocumentElement.AppendChild(element1);
 
@@ -468,7 +480,7 @@ namespace LincolnTest
 
             for (int i = 0; i < trialsRead.Count; i++)
             {
-                trialList.Add(trialsRead[i].FirstChild.InnerXml);
+                trialList.Add(trialsRead[i].SelectSingleNode("partCode").InnerText);
             }
 
             return trialList;
@@ -484,9 +496,7 @@ namespace LincolnTest
 
             foreach (XmlNode trial in trialsRead)
             {
-                Debug.WriteLine("Node: " + trial.SelectSingleNode("partCode").InnerText);
-
-
+                Debug.WriteLine("Node: " + trial.SelectSingleNode("partCode").InnerText + " Trial name:  " + trialName);
                 if (trial.SelectSingleNode("partCode").InnerText == trialName)
                 {
                     selectedTrial = (XmlElement)trial;
@@ -524,11 +534,13 @@ namespace LincolnTest
 
             trialInfo.isPresented = selectedTrial["isPresented"].InnerText == "true";
             trialInfo.isScored = selectedTrial["isScored"].InnerText == "true";
+            trialInfo.partDOB = selectedTrial["partDOB"].InnerText;
+            trialInfo.partGender = selectedTrial["partGender"].InnerText;
 
             return trialInfo;
 
         }
-        // Returns the info for a block
+        // Returns the info for a block by int
         public BlockInfo getBlockInfo(int blockNum)
         {
             BlockInfo blockInfo = new BlockInfo();
@@ -558,9 +570,47 @@ namespace LincolnTest
                     }
                 }
             }
+            return blockInfo;
+        }
+
+        public BlockInfo getBlockInfo(string blockName)
+        {
+            BlockInfo blockInfo = new BlockInfo();
+            XmlElement blockElement = null;
+
+            foreach (XmlNode block in blocksRead)
+            {
+                Debug.WriteLine("Node: " + block.SelectSingleNode("Block").InnerText + " Trial name:  " + blockName);
+                if (block.SelectSingleNode("Block").InnerText == blockName)
+                {
+                    blockElement = (XmlElement)block;
+                }
+            }
+
+            blockInfo.blockName = blockElement["blockName"].InnerText;
+
+            foreach (PropertyInfo propertyinfo in typeof(BlockInfo).GetProperties())
+            {
+                if (propertyinfo != null)
+                {
+                    var valueOfField = propertyinfo.GetValue(blockInfo);
+                    var fieldname = propertyinfo.Name;
 
 
-
+                    if (blockElement.SelectNodes(fieldname).Count > 0)
+                    {
+                        propertyinfo.SetValue(blockInfo, blockElement[fieldname].InnerText);
+                        // Console.WriteLine(fieldname + "  with value  " + valueOfField + "  loaded.");
+                    }
+                    else
+                    {
+                        addMissingNode(blockElement, fieldname, "0");
+                        // errorMessage("Unable to read " + fieldname + " from file", "File repaired and setting to default");
+                        propertyinfo.SetValue(blockInfo, "0");
+                        // blockInfo[blockindex].hcWindow = "0";
+                    }
+                }
+            }
             return blockInfo;
         }
 

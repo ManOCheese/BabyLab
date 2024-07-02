@@ -575,7 +575,7 @@
             this.radioButton2.Size = new System.Drawing.Size(115, 17);
             this.radioButton2.TabIndex = 1;
             this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Total look exceeds";
+            this.radioButton2.Text = "Total looks exceeds";
             this.radioButton2.UseVisualStyleBackColor = true;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
@@ -648,7 +648,7 @@
             this.lookTrialExceedSelect.Size = new System.Drawing.Size(164, 17);
             this.lookTrialExceedSelect.TabIndex = 1;
             this.lookTrialExceedSelect.TabStop = true;
-            this.lookTrialExceedSelect.Text = "Total look for blocks exceeds";
+            this.lookTrialExceedSelect.Text = "Total looks for blocks exceeds";
             this.lookTrialExceedSelect.UseVisualStyleBackColor = true;
             // 
             // radioButton4

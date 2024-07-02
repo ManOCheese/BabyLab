@@ -30,7 +30,7 @@
         private void InitializeComponent()
         {
             this.okButton = new System.Windows.Forms.Button();
-            this.dataFilesList = new System.Windows.Forms.ListBox();
+            this.trialListBox = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cutPointBox = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -55,9 +55,14 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.expListBox = new System.Windows.Forms.ListBox();
+            this.blockListBox = new System.Windows.Forms.ListBox();
             this.outputDGV = new System.Windows.Forms.DataGridView();
             this.trialUpDown = new System.Windows.Forms.NumericUpDown();
-            this.partNameLabel = new System.Windows.Forms.Label();
+            this.partInfoLabel = new System.Windows.Forms.Label();
+            this.totalsDGV = new System.Windows.Forms.DataGridView();
+            this.Stat = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.cutPointBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
@@ -69,28 +74,29 @@
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.outputDGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trialUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.totalsDGV)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(206, 546);
+            this.okButton.Location = new System.Drawing.Point(362, 235);
             this.okButton.Margin = new System.Windows.Forms.Padding(2);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(59, 37);
+            this.okButton.Size = new System.Drawing.Size(106, 37);
             this.okButton.TabIndex = 0;
-            this.okButton.Text = "Ok";
+            this.okButton.Text = "Load";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
-            // dataFilesList
+            // trialListBox
             // 
-            this.dataFilesList.FormattingEnabled = true;
-            this.dataFilesList.Location = new System.Drawing.Point(22, 18);
-            this.dataFilesList.Margin = new System.Windows.Forms.Padding(2);
-            this.dataFilesList.Name = "dataFilesList";
-            this.dataFilesList.Size = new System.Drawing.Size(260, 173);
-            this.dataFilesList.TabIndex = 1;
-            this.dataFilesList.SelectedIndexChanged += new System.EventHandler(this.dataFilesList_SelectedIndexChanged);
+            this.trialListBox.FormattingEnabled = true;
+            this.trialListBox.Location = new System.Drawing.Point(204, 19);
+            this.trialListBox.Margin = new System.Windows.Forms.Padding(2);
+            this.trialListBox.Name = "trialListBox";
+            this.trialListBox.Size = new System.Drawing.Size(86, 173);
+            this.trialListBox.TabIndex = 1;
+            this.trialListBox.SelectedIndexChanged += new System.EventHandler(this.dataFilesList_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -344,20 +350,40 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.dataFilesList);
+            this.groupBox2.Controls.Add(this.expListBox);
+            this.groupBox2.Controls.Add(this.blockListBox);
+            this.groupBox2.Controls.Add(this.trialListBox);
             this.groupBox2.Location = new System.Drawing.Point(25, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(311, 213);
+            this.groupBox2.Size = new System.Drawing.Size(299, 213);
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Files Found";
+            // 
+            // expListBox
+            // 
+            this.expListBox.FormattingEnabled = true;
+            this.expListBox.Location = new System.Drawing.Point(11, 19);
+            this.expListBox.Name = "expListBox";
+            this.expListBox.Size = new System.Drawing.Size(91, 173);
+            this.expListBox.TabIndex = 3;
+            this.expListBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // blockListBox
+            // 
+            this.blockListBox.FormattingEnabled = true;
+            this.blockListBox.Location = new System.Drawing.Point(103, 19);
+            this.blockListBox.Name = "blockListBox";
+            this.blockListBox.Size = new System.Drawing.Size(94, 173);
+            this.blockListBox.TabIndex = 2;
+            this.blockListBox.SelectedIndexChanged += new System.EventHandler(this.blockListBox_SelectedIndexChanged);
             // 
             // outputDGV
             // 
             this.outputDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.outputDGV.Location = new System.Drawing.Point(516, 67);
             this.outputDGV.Name = "outputDGV";
-            this.outputDGV.Size = new System.Drawing.Size(904, 484);
+            this.outputDGV.Size = new System.Drawing.Size(670, 607);
             this.outputDGV.TabIndex = 7;
             // 
             // trialUpDown
@@ -368,21 +394,46 @@
             this.trialUpDown.TabIndex = 8;
             this.trialUpDown.ValueChanged += new System.EventHandler(this.trialUpDown_ValueChanged);
             // 
-            // partNameLabel
+            // partInfoLabel
             // 
-            this.partNameLabel.AutoSize = true;
-            this.partNameLabel.Location = new System.Drawing.Point(750, 30);
-            this.partNameLabel.Name = "partNameLabel";
-            this.partNameLabel.Size = new System.Drawing.Size(41, 13);
-            this.partNameLabel.TabIndex = 9;
-            this.partNameLabel.Text = "label12";
+            this.partInfoLabel.AutoSize = true;
+            this.partInfoLabel.Location = new System.Drawing.Point(799, 32);
+            this.partInfoLabel.Name = "partInfoLabel";
+            this.partInfoLabel.Size = new System.Drawing.Size(27, 13);
+            this.partInfoLabel.TabIndex = 9;
+            this.partInfoLabel.Text = "Trial";
+            // 
+            // totalsDGV
+            // 
+            this.totalsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.totalsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Stat,
+            this.Value});
+            this.totalsDGV.Location = new System.Drawing.Point(1221, 11);
+            this.totalsDGV.Name = "totalsDGV";
+            this.totalsDGV.Size = new System.Drawing.Size(429, 843);
+            this.totalsDGV.TabIndex = 10;
+            // 
+            // Stat
+            // 
+            this.Stat.HeaderText = "Stat";
+            this.Stat.Name = "Stat";
+            this.Stat.ReadOnly = true;
+            this.Stat.Width = 260;
+            // 
+            // Value
+            // 
+            this.Value.HeaderText = "Value";
+            this.Value.Name = "Value";
+            this.Value.ReadOnly = true;
             // 
             // DataWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1456, 596);
-            this.Controls.Add(this.partNameLabel);
+            this.ClientSize = new System.Drawing.Size(1676, 876);
+            this.Controls.Add(this.totalsDGV);
+            this.Controls.Add(this.partInfoLabel);
             this.Controls.Add(this.trialUpDown);
             this.Controls.Add(this.outputDGV);
             this.Controls.Add(this.groupBox2);
@@ -407,6 +458,7 @@
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.outputDGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trialUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.totalsDGV)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -415,7 +467,7 @@
         #endregion
 
         private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.ListBox dataFilesList;
+        private System.Windows.Forms.ListBox trialListBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown cutPointBox;
         private System.Windows.Forms.Label label2;
@@ -442,6 +494,11 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataGridView outputDGV;
         private System.Windows.Forms.NumericUpDown trialUpDown;
-        private System.Windows.Forms.Label partNameLabel;
+        private System.Windows.Forms.Label partInfoLabel;
+        private System.Windows.Forms.ListBox blockListBox;
+        private System.Windows.Forms.ListBox expListBox;
+        private System.Windows.Forms.DataGridView totalsDGV;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Stat;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
     }
 }

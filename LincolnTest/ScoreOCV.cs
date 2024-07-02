@@ -286,7 +286,7 @@ namespace LincolnTest
                 keysTextBox.AppendText(setting.Name + " : " + ScoreKB.Default[setting.Name] + Environment.NewLine);
             }
         }
-        // Process the key presses for marking the look direction
+        // Process the key presses for marking the looks direction
         private void markLook(string direction)
         {
             foreach (ListViewItem item in eventListView.Items)
@@ -607,7 +607,7 @@ namespace LincolnTest
         }
 
 
-        // Override key presses for marking the look direction
+        // Override key presses for marking the looks direction
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Left)

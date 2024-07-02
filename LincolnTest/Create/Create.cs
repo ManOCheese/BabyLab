@@ -295,6 +295,7 @@ namespace LincolnTest
 
             foreach (string trial in trials)
             {
+                Debug.WriteLine("Adding trial: " + trial);
                 trialListBox.Items.Add(trial);
             }
 
@@ -395,8 +396,8 @@ namespace LincolnTest
         // Load the trial info from the array to the form
         private void populate_TrialInfo()
         {
+            Debug.WriteLine("Populating trial info for Trial: " + trialListBox.Text);
             trialInfo = myXML.getTrialInfo(trialListBox.Text);
-
 
             trialTitleBox.Text = trialInfo.partCode;
 
@@ -1082,9 +1083,12 @@ namespace LincolnTest
             // Balance 1 - Swap Stims and Side
 
             CBTrialInfo.partCode = trialInfo.partCode + "_StimSide";
+            CBTrialInfo.partDOB = trialInfo.partDOB;
+            CBTrialInfo.partGender = trialInfo.partGender;
             CBTrialInfo.stimulusList = string.Join(",", tempStimsR);
             CBTrialInfo.stimulusListRight = string.Join(",", tempStimsL);
             CBTrialInfo.audioStimulus = string.Join(",", tempAudioStims);
+
             foreach (string side in tempAudioStimSide)
             {
                 Console.WriteLine("Changing side: " + side);
