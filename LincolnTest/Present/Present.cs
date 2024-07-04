@@ -426,5 +426,9 @@ namespace LincolnTest
             () => refresh_trialListBox()));
         }
 
+        private void shuffleCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

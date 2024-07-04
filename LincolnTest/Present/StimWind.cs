@@ -324,7 +324,7 @@ namespace LincolnTest
             {
                 rightStimPic.ImageLocation = null;
             }
-            audioStimFile = Properties.Settings.Default.stimPathVisual + "/" + audio;
+            audioStimFile = Properties.Settings.Default.stimPathAudio + "/" + audio;
         }
 
         private void showStims(Object source, ElapsedEventArgs e)

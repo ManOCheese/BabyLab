@@ -113,7 +113,7 @@
             this.cutPointBox.Location = new System.Drawing.Point(84, 245);
             this.cutPointBox.Margin = new System.Windows.Forms.Padding(2);
             this.cutPointBox.Maximum = new decimal(new int[] {
-            1000,
+            12000,
             0,
             0,
             0});
@@ -121,7 +121,7 @@
             this.cutPointBox.Size = new System.Drawing.Size(80, 20);
             this.cutPointBox.TabIndex = 3;
             this.cutPointBox.Value = new decimal(new int[] {
-            500,
+            3000,
             0,
             0,
             0});

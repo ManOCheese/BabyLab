@@ -165,7 +165,6 @@ namespace LincolnTest
                 // Singleframe is used for moving to a specific frame and then pausing
                 if (singleFrame)
                 {
-
                     initTimeline(capture1.FrameCount.ToString());
 
                     capture1.Read(image1);

@@ -419,12 +419,15 @@ namespace LincolnTest
             // shuffleCheckBox
             // 
             this.shuffleCheckBox.AutoSize = true;
+            this.shuffleCheckBox.Checked = true;
+            this.shuffleCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.shuffleCheckBox.Location = new System.Drawing.Point(580, 181);
             this.shuffleCheckBox.Name = "shuffleCheckBox";
             this.shuffleCheckBox.Size = new System.Drawing.Size(79, 17);
             this.shuffleCheckBox.TabIndex = 28;
             this.shuffleCheckBox.Text = "Randomise";
             this.shuffleCheckBox.UseVisualStyleBackColor = true;
+            this.shuffleCheckBox.CheckedChanged += new System.EventHandler(this.shuffleCheckBox_CheckedChanged);
             // 
             // Present
             // 

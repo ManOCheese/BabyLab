@@ -109,7 +109,7 @@ namespace LincolnTest
             camera.Parameters[PLCamera.AcquisitionFrameRateEnable].SetValue(true);
             camera.Parameters[PLCamera.CenterX].SetValue(true);
             camera.Parameters[PLCamera.CenterY].SetValue(true);
-            camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(22200);
+            camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(16000);
 
             camera.StreamGrabber.Start();
 
@@ -141,10 +141,14 @@ namespace LincolnTest
 
                 // Open the connection to the camera device and set parameters
                 camera.Open();
+
+                camera.Parameters[PLCamera.GainRaw].SetValue(1);
+
                 camera.Parameters[PLCamera.AcquisitionFrameRateEnable].SetValue(true);
                 camera.Parameters[PLCamera.CenterX].SetValue(true);
                 camera.Parameters[PLCamera.CenterY].SetValue(true);
-                camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(22200);
+                camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(16000);
+                camera.Parameters[PLCamera.AcquisitionFrameRateAbs].SetValue(60);
 
                 camera.StreamGrabber.Start();
 
@@ -164,6 +168,7 @@ namespace LincolnTest
                     }
                     catch
                     {
+                        return;
                         grabResult = null;
                     }
 

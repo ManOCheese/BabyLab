@@ -88,9 +88,10 @@ namespace LincolnTest
                 stimCountV.Text = "Stim folder empty";
             }
 
+            string[] Afilters = new[] { "*.wav" };
             if (Directory.Exists(Properties.Settings.Default.stimPathAudio))
             {
-                int audioCount = countFilesinFolder(Properties.Settings.Default.stimPathAudio, filters);
+                int audioCount = countFilesinFolder(Properties.Settings.Default.stimPathAudio, Afilters);
 
                 if (audioCount > 0)
                 {

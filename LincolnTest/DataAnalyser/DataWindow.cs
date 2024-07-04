@@ -30,7 +30,7 @@ namespace LincolnTest
         string[] scoreFiles;
         string currBlock;
 
-        int cutoff = 1500;
+        int cutoff = 3000;
 
         List<string> data = new List<string>();
         List<string> presData = new List<string>();
