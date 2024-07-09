@@ -47,7 +47,7 @@ namespace LincolnTest
         int frameCache = 1;
         private bool isSaved = false;
         float brightness = 1;
-        private string currTrial = "Trial 1";
+        private string currTrial = "  ";
 
         private static System.Timers.Timer aTimer;
 
@@ -169,6 +169,7 @@ namespace LincolnTest
 
                     capture1.Read(image1);
                     image1.PutText(currTrial, myPoint, HersheyFonts.HersheyComplex, 2, fontColour, 4);
+                   
                     updateTimeline(capture1.PosFrames);
                     bw.ReportProgress(0, image1);
                     singleFrame = false;
@@ -611,12 +612,12 @@ namespace LincolnTest
         {
             if (keyData == Keys.Left)
             {
-                markLook("Left");
+                markLook("Right");
                 return true;
             }
             if (keyData == Keys.Right)
             {
-                markLook("Right");
+                markLook("Left");
                 return true;
             }
             if (keyData == Keys.Down)
@@ -761,7 +762,10 @@ namespace LincolnTest
         {
 
             singleFrame = true;
-            cam1Worker.RunWorkerAsync();
+            if(!cam1Worker.IsBusy)
+            {
+                cam1Worker.RunWorkerAsync();
+            }
         }
 
         private void brightTrackBar_Scroll(object sender, EventArgs e)

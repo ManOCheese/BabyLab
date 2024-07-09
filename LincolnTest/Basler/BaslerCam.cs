@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Drawing;
 using static System.Net.Mime.MediaTypeNames;
+using System.ComponentModel;
 
 namespace LincolnTest
 {
@@ -25,6 +26,7 @@ namespace LincolnTest
         private Camera camera;
         private PixelDataConverter converter = new PixelDataConverter();
         OpenCvSharp.VideoWriter videoWriter = new OpenCvSharp.VideoWriter();
+        private BackgroundWorker camWorker;
 
         public IGrabResult grabResult;
 
@@ -87,19 +89,29 @@ namespace LincolnTest
         /// </summary>
         public void conShot()
         {
+            camWorker = new BackgroundWorker();
+            camWorker.WorkerReportsProgress = true;
+            camWorker.DoWork += new DoWorkEventHandler(th_grab);
+            camWorker.ProgressChanged += new ProgressChangedEventHandler(updateFrame);
+
             if (!grabbing)
             {
                 grabbing = true;
 
                 try
                 {
-                    Thread thread = new Thread(() => th_grab(1280, 1024, 0));
-                    thread.Start();
+                    //Thread thread = new Thread(() => th_grab(1280, 1024, 0));
+                    //thread.Start();
+                    camWorker.RunWorkerAsync();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+            }
+            else
+            {
+                camWorker.CancelAsync();
             }
         }
 
@@ -132,8 +144,11 @@ namespace LincolnTest
             return bitmap;
         }
 
-        private void th_grab(int height = 0, int width = 0, int snap_wait = 500)
+        private void th_grab(object sender, DoWorkEventArgs e)
+        // private void th_grab(int height = 0, int width = 0, int snap_wait = 500)
         {
+            BackgroundWorker bw = (BackgroundWorker)sender;
+
             try
             {
                 // Set the acquisition mode to free running continuous acquisition when the camera is opened.
@@ -142,13 +157,22 @@ namespace LincolnTest
                 // Open the connection to the camera device and set parameters
                 camera.Open();
 
-                camera.Parameters[PLCamera.GainRaw].SetValue(1);
+            }
+            catch (Exception exception)
+            {
+                camera.Close();
+                // TODO: Custom error message
+                Debug.WriteLine("Exception: {0}" + exception.Message);
+                MessageBox.Show("Exception: {0}" + exception.Message);
+            }
+
+            camera.Parameters[PLCamera.GainRaw].SetValue(1);
 
                 camera.Parameters[PLCamera.AcquisitionFrameRateEnable].SetValue(true);
                 camera.Parameters[PLCamera.CenterX].SetValue(true);
                 camera.Parameters[PLCamera.CenterY].SetValue(true);
                 camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(16000);
-                camera.Parameters[PLCamera.AcquisitionFrameRateAbs].SetValue(60);
+                camera.Parameters[PLCamera.AcquisitionFrameRateAbs].SetValue(25);
 
                 camera.StreamGrabber.Start();
 
@@ -161,34 +185,35 @@ namespace LincolnTest
 
                 // Grab images from the camera
                 while (grabbing)
-                {
+                { 
                     try
                     {
-                        grabResult = camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
+                        grabResult = camera.StreamGrabber.RetrieveResult(200, TimeoutHandling.ThrowException);
                     }
-                    catch
+                    catch(Exception exception)
                     {
-                        return;
+                        Debug.WriteLine("Grab exception: {0}" + exception.Message);
                         grabResult = null;
+                        return;
                     }
 
                     using (grabResult)
                     {
                         if (grabResult.GrabSucceeded)
                         {
-                            // convert image from basler IImage to OpenCV Mat
-                            Mat img = convertIImage2Mat(grabResult);
-                            // convert image from BayerBG to RGB
-                            Cv2.CvtColor(img, img, ColorConversionCodes.BayerBG2GRAY);
-
-                            // Only write the image if the camera is supposed to be writing
-                            if (writing)
+                            
+                            if (grabResult.PixelData != null)
                             {
-                                currFrame++;
-                                videoWriter.Write(img);
+                                converter.OutputPixelFormat = PixelType.BGR8packed;
+                                byte[] buffer = grabResult.PixelData as byte[];
+                                Mat img = new Mat(grabResult.Height, grabResult.Width, MatType.CV_8U, buffer);
+
+                                bw.ReportProgress(0, img);
                             }
-                            bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(img);
-                            img.Dispose();
+                            else 
+                            {  
+                                Debug.WriteLine("No pixel data");
+                            }
                         }
                     }
                 }
@@ -203,16 +228,27 @@ namespace LincolnTest
                     Debug.WriteLine("Video < 10 frames");
                     File.Delete(filename);
                 }
-            }
-            catch (Exception exception)
-            {
-                if (camera.IsOpen)
-                    camera.Close();
-                // TODO: Custom error message
-                MessageBox.Show("Exception: {0}" + exception.Message);
-            }
         }
 
+        private void updateFrame(object sender, ProgressChangedEventArgs e)
+        {
+            // IGrabResult grabResult = (IGrabResult)e.UserState;
+            // convert image from basler IImage to OpenCV Mat
+            //
+            Mat img = (Mat)e.UserState;           
+
+            // convert image from BayerBG to RGB
+            Cv2.CvtColor(img, img, ColorConversionCodes.BayerBG2GRAY);
+
+            // Only write the image if the camera is supposed to be writing
+            if (writing)
+            {
+                currFrame++;
+                videoWriter.Write(img);
+            }
+            bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(img);
+            img.Dispose();
+        }
         /// <summary>
         /// Converts an IImage to a Mat.
         /// </summary>

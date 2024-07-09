@@ -31,6 +31,7 @@ namespace LincolnTest
         string currBlock;
 
         int cutoff = 3000;
+        int latency = 0;
 
         List<string> data = new List<string>();
         List<string> presData = new List<string>();
@@ -51,6 +52,10 @@ namespace LincolnTest
         {
             InitializeComponent();
 
+            DataGridViewCheckBoxColumn checkColumn = new DataGridViewCheckBoxColumn();
+            checkColumn.Name = "Include";
+            checkColumn.HeaderText = "Include";
+
             // Add columns to the data grid view
             outputDGV.Columns.Add("Look", "Look");
             outputDGV.Columns.Add("Length", "Length");
@@ -58,7 +63,15 @@ namespace LincolnTest
             outputDGV.Columns.Add("LImage", "Left Image");
             outputDGV.Columns.Add("RImage", "Right Image");
             outputDGV.Columns.Add("Side", "Side");
-            outputDGV.Columns.Add("Note", "Note");
+            outputDGV.Columns.Add(checkColumn);
+
+            outputDGV.Columns[0].Width = 50;
+            outputDGV.Columns[2].Width = 50;
+            outputDGV.Columns[3].Width = 150;
+            outputDGV.Columns[4].Width = 150;
+            outputDGV.Columns[5].Width = 50;
+            outputDGV.Columns[6].Width = 50;
+
 
             scoredPath = Properties.Settings.Default.ExpPath + @"\output\scored\";
             scoreFiles = Directory.GetFiles(scoredPath);
@@ -84,9 +97,126 @@ namespace LincolnTest
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            //readFiles();
-            //changeTrial();
-            //getImageInfo();
+            for (int i = 0; i < trialListBox.Items.Count; i++)
+            {
+                trialListBox.SelectedIndex = i;
+            }
+
+            List<string> outputs = new List<string>();
+
+            string prevPart = "";
+            int index = -1;
+
+            if (!perPartCheck.Checked)
+            {
+                outputs.Add("");
+            }
+
+            foreach (LookData look in lookData)
+            {
+                if(!look.isFinal) continue;
+                look.processData();
+                string line = "";
+                line += look.partName + ",";
+                line = line + look.trial + ",";
+                line = line + look.leftImage + ",";
+                line = line + look.rightImage + ",";
+                line = line + look.side + ",";
+                line = line + look.outputData.tottarpr.val + ",";
+                line = line + look.outputData.totdispr.val + ",";
+                line = line + look.outputData.totdifpr.val + ",";
+                line = line + look.outputData.tottarpo.val + ",";
+                line = line + look.outputData.totdispo.val + ",";
+                line = line + look.outputData.totdifpo.val + ",";
+                line = line + look.outputData.tottarch.val + ",";
+                line = line + look.outputData.totdisch.val + ",";
+                line = line + look.outputData.totdifch.val + ",";
+                line = line + look.outputData.totLpr.val + ",";
+                line = line + look.outputData.totRpr.val + ",";
+                line = line + look.outputData.totLpo.val + ",";
+                line = line + look.outputData.totRpo.val + ",";
+                line = line + look.outputData.protarpr.val + ",";
+                line = line + look.outputData.prodispr.val + ",";
+                line = line + look.outputData.protarpo.val + ",";
+                line = line + look.outputData.prodispo.val + ",";
+                line = line + look.outputData.protarch.val + ",";
+                line = line + look.outputData.prodisch.val + ",";
+                line = line + look.outputData.llktarpr.val + ",";
+                line = line + look.outputData.llkdispr.val + ",";
+                line = line + look.outputData.llktarpo.val + ",";
+                line = line + look.outputData.llkdispo.val + ",";
+                line = line + look.outputData.llktarch.val + ",";
+                line = line + look.outputData.llkdisch.val + ",";
+                line = line + look.outputData.lldifch.val + ",";
+                line = line + look.outputData.flktarpr.val + ",";
+                line = line + look.outputData.flkdispr.val + ",";
+                line = line + look.outputData.flktarpo.val + ",";
+                line = line + look.outputData.flkdispo.val + ",";
+                line = line + look.outputData.flktarch.val + ",";
+                line = line + look.outputData.flkdisch.val + ",";
+                line = line + look.outputData.fldifch.val + ",";
+                line = line + look.outputData.latlkdir.val + ",";
+                line = line + look.outputData.dir1sw.val + ",";
+                line = line + look.outputData.dir2sw.val + ",";
+                line = line + look.outputData.lat1sw.val + ",";
+                line = line + look.outputData.lat2sw.val + ",";
+                line = line + look.outputData.lattar.val + ",";
+                line = line + look.outputData.latdis.val + ",";
+                line = line + look.outputData.latmid.val + ",";
+                line = line + look.outputData.numtarpr.val + ",";
+                line = line + look.outputData.numdispr.val + ",";
+                line = line + look.outputData.numdifpr.val + ",";
+                line = line + look.outputData.numtarpo.val + ",";
+                line = line + look.outputData.numdispo.val + ",";
+                line = line + look.outputData.numdifpo.val;
+                line += "\n";
+
+                if (perPartCheck.Checked)
+                {
+                    if (look.partName == prevPart)
+                    {
+                        outputs[index] += line;
+                    }
+                    else
+                    {
+                        outputs.Add(line);
+                        index++;
+                    }
+                }
+                else
+                {
+                    outputs[0] += line; ;
+                }
+
+                prevPart = look.partName;
+            }
+
+            Directory.CreateDirectory(Properties.Settings.Default.LastProject + @"\output\Final\");
+            string outPath = Properties.Settings.Default.LastProject + @"\output\Final\";
+
+            if (!perPartCheck.Checked)
+            {
+                StreamWriter outputFile = new StreamWriter(System.IO.Path.Combine(outPath, expListBox.Text.Split('.')[0] + ".csv"));
+
+                string colNames = "Participant,Trial,Left,Right,Side,tottarpr,totdispr,totdifpr,tottarpo,totdispo,totdifpo,tottarch,totdisch,totdifch,totLpr,totRpr,totLpo,totRpo,protarpr,prodispr,protarpo,prodispo,protarch,prodisch,llktarpr,llkdispr,llktarpo,llkdispo,llktarch,llkdisch,lldifch,flktarpr,flkdispr,flktarpo,flkdispo,flktarch,flkdisch,fldifch,latlkdir,dir1sw,dir2sw,lat1sw,lat2sw,lattar,latdis,latmid,numtarpr,numdispr,numdifpr,numtarpo,numdispo,numdifpo";
+                outputFile.WriteLine(colNames);
+                outputFile.WriteLine(outputs[0]);
+                outputFile.Close();
+            }
+            else
+            {
+                foreach (string output in outputs)
+                {
+                    StreamWriter outputFile = new StreamWriter(System.IO.Path.Combine(outPath, output.Split(',')[0] + ".csv"));
+
+                    string colNames = "Participant,Trial,Left,Right,Side,tottarpr,totdispr,totdifpr,tottarpo,totdispo,totdifpo,tottarch,totdisch,totdifch,totLpr,totRpr,totLpo,totRpo,protarpr,prodispr,protarpo,prodispo,protarch,prodisch,llktarpr,llkdispr,llktarpo,llkdispo,llktarch,llkdisch,lldifch,flktarpr,flkdispr,flktarpo,flkdispo,flktarch,flkdisch,fldifch,latlkdir,dir1sw,dir2sw,lat1sw,lat2sw,lattar,latdis,latmid,numtarpr,numdispr,numdifpr,numtarpo,numdispo,numdifpo";
+                    outputFile.WriteLine(colNames);
+
+                    Debug.WriteLine("Adding output: " + output);
+                    outputFile.WriteLine(output);
+                    outputFile.Close();
+                }
+            }
         }
 
         private void readFiles()
@@ -98,7 +228,7 @@ namespace LincolnTest
                 // Get participant name from file name
                 string partName = System.IO.Path.GetFileName(file).Split('_')[0];
 
-                Debug.WriteLine("Reading participant: " + partName);
+                // Debug.WriteLine("Reading participant: " + partName);
 
                 const Int32 BufferSize = 128;
                 using (var scoreStream = File.OpenRead(file))
@@ -198,6 +328,8 @@ namespace LincolnTest
             int prevLookTime = 0;
             int index = 0;
 
+            cutoff = (int)cutPointBox.Value;
+
             // Find cutoff point and insert looks to split post and pre looks
             string[] tempLook = new string[3];
 
@@ -215,6 +347,8 @@ namespace LincolnTest
                     break;
                 }
                 index++;
+
+                // TODO Repeat above with latency
             }
 
             foreach (string[] look in looks)
@@ -260,7 +394,7 @@ namespace LincolnTest
                         prevLook = thisLook;
                         break;
                     default:
-                        Debug.WriteLine("Default Look: " + prevLook);
+                        // Debug.WriteLine("Default Look: " + prevLook);
                         // code block
                         break;
                 }
@@ -291,7 +425,7 @@ namespace LincolnTest
                 }
                 else
                 {
-                    Debug.WriteLine("No data for: " + trialListBox.Text);
+                    // Debug.WriteLine("No data for: " + trialListBox.Text);
                 }
             }
 
@@ -321,6 +455,8 @@ namespace LincolnTest
             outputDGV.Rows.Clear();
 
             if (partData.Count == 0) return;
+            
+            includeCheckBox.Checked = partData[index].isFinal;
 
             for (int i = 0; i < partData[index].looks.Count; i++)
             {
@@ -362,7 +498,7 @@ namespace LincolnTest
             int i = 0;
             foreach (result res in outputData.GetType().GetProperties().Select(p => p.GetValue(outputData)).OfType<result>())
             {
-                Debug.WriteLine(res.desc + ": " + res.val);
+                // Debug.WriteLine(res.desc + ": " + res.val);
                 totalsDGV.Rows.Add();
                 totalsDGV.Rows[i].Cells[0].Value = res.desc;
                 totalsDGV.Rows[i].Cells[1].Value = res.val;
@@ -373,9 +509,9 @@ namespace LincolnTest
 
         public void getImageInfo()
         {
-            Debug.WriteLine("Getting trial info");
+            //Debug.WriteLine("Getting trial info");
             trialInfo = myXML.getTrialInfo(partInfoLabel.Text);
-            Debug.WriteLine(trialInfo.stimulusList);
+            //Debug.WriteLine(trialInfo.stimulusList);
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -406,7 +542,7 @@ namespace LincolnTest
                 }
                 else
                 {
-                    Debug.WriteLine("Refreshing..." + fileName);
+                    // Debug.WriteLine("Refreshing..." + fileName);
                     refreshBlockList();
                 }
             }
@@ -423,7 +559,7 @@ namespace LincolnTest
             // Get reader to read the blocks
             List<string> blocks = myXML.getBlockList(expListBox.Text);
 
-            Debug.WriteLine("Read " + blocks.Count + " lines");
+            // Debug.WriteLine("Read " + blocks.Count + " lines");
             if (blocks.Count == 0) return;
 
             foreach (string block in blocks)
@@ -457,11 +593,34 @@ namespace LincolnTest
 
             foreach (string trial in trials)
             {
-                Debug.WriteLine("Adding trial: " + trial);
+                // Debug.WriteLine("Adding trial: " + trial);
                 trialListBox.Items.Add(trial);
             }
 
             trialListBox.SelectedIndex = 0;
+        }
+
+        private void cutPointBox_ValueChanged(object sender, EventArgs e)
+        {
+            readFiles();
+            loadData();
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numericUpDown5_ValueChanged(object sender, EventArgs e)
+        {
+            latency = (int)numericUpDown5.Value;
+            readFiles();
+            loadData();
+        }
+
+        private void includeCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            lookData[(int)trialUpDown.Value].isFinal = includeCheckBox.Checked;
         }
     }
 
@@ -471,9 +630,11 @@ namespace LincolnTest
     {
         public string partName { get; set; }
         public string trial { get; set; }
+        public float ageDays { get; set; }
         public List<bool> isPre { get; set; }
         public List<string> looks { get; set; }
         public List<int> length { get; set; }
+        public bool isFinal { get; set; } // Flags whether to include this in final output
         public string leftImage { get; set; }
         public string rightImage { get; set; }
         public string side { get; set; }
@@ -486,6 +647,7 @@ namespace LincolnTest
             isPre = new List<bool>();
             looks = new List<string>();
             length = new List<int>();
+            isFinal = true;
             leftImage = "";
             rightImage = "";
             side = "";
@@ -579,7 +741,7 @@ namespace LincolnTest
                 }
                 else
                 {
-                    Debug.WriteLine("Other look: " + look);
+                    // Debug.WriteLine("Other look: " + look);
                 }
                 i++;
             }
@@ -624,6 +786,7 @@ namespace LincolnTest
 
             // TODO: Latency calculations
             outputData.latlkdir.val = 0;
+
 
 
             outputData.numdifpr.val = outputData.numtarpr.val - outputData.numdispr.val;
@@ -853,7 +1016,7 @@ public class OutputData
 
 public class result
 {
-    public int val { get; set; }
+    public float val { get; set; }
     public string desc { get; set; }
 
     public result()

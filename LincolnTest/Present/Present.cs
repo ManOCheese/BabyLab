@@ -1,6 +1,8 @@
 ﻿using Basler.Pylon;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
@@ -35,6 +37,10 @@ namespace LincolnTest
         private static System.Timers.Timer previewTimer;
         private static System.Timers.Timer camPreviewTimer;
 
+        // Background workers for video recording
+        private BackgroundWorker cam1Worker;
+        private BackgroundWorker cam2Worker;
+
         Bitmap preview = new Bitmap(1920, 1080);
         Rectangle rec = new Rectangle(0, 0, 1920, 1080);
         private delegate void SafeCallDelegate(Object source, ElapsedEventArgs e);
@@ -51,6 +57,8 @@ namespace LincolnTest
         bool cameraHidden;
         string camOutputPath = "";
 
+
+
         float keyFrame = 0;
 
         private PixelDataConverter converter = new PixelDataConverter();
@@ -61,11 +69,13 @@ namespace LincolnTest
             PopulateExpListBox();
             UpdateKeysText();
 
+
         }
 
         private bool setupCameras()
         {
             // TODO: Don't hard code the IP addresses
+
             camera = new BaslerCam("169.254.72.175");
             camera2 = new BaslerCam("169.254.78.175");
 
@@ -73,17 +83,12 @@ namespace LincolnTest
             // Camera name is the name of the trial, so we can load the correct video
             if (camera.found && camera2.found)
             {
+                Debug.WriteLine("Cams found");
                 string taskFileName = (string)expListBox.Text;
                 string[] taskName = taskFileName.Split('.');
 
                 camOutputPath = Properties.Settings.Default.ExpPath + "\\CamOutput\\";
                 Directory.CreateDirectory(camOutputPath);
-
-                camera.camPath = camOutputPath;
-                camera2.camPath = camOutputPath;
-                Debug.WriteLine(camera.camPath);
-                camera.cam_name = (string)trialListBox.SelectedItem + "_Left";
-                camera2.cam_name = (string)trialListBox.SelectedItem + "_Right";
 
                 return true;
             }
@@ -98,16 +103,45 @@ namespace LincolnTest
             showCamButton.Enabled = false;
             hideCamButton.Enabled = true;
 
-            camera.conShot();
-            camera2.conShot();
-
             // Timer to update the camera preview
-            camPreviewTimer = new System.Timers.Timer(60);
+            camPreviewTimer = new System.Timers.Timer(120);
 
             camPreviewTimer.Elapsed += cameraPreview;
             camPreviewTimer.AutoReset = true;
             camPreviewTimer.Enabled = true;
+
+            camera2.cam_name = trialListBox.Text + "_Right";
+            camera2.camPath = camOutputPath;
+            camera.camPath = camOutputPath;
+            Debug.WriteLine("Trial name: " + trialListBox.Text);
+            camera.cam_name = trialListBox.Text + "_Left";
+            
+            if (camera.found)
+            {
+                Debug.WriteLine("Starting cam1");
+                camera.conShot();
+            }
+            else
+            {
+                Debug.WriteLine("Cam not found");
+            }
+
+            
+
+            if (camera2.found)
+            {
+                Debug.WriteLine("Starting cam2");
+                camera2.conShot();
+            }
+            else
+            {
+                Debug.WriteLine("Cam2 not found");
+            }
+            camera.writing = true;
+            camera2.writing = true;
         }
+
+
         // Populate the experiment list box with the .bex files in the experiment directory
         private void PopulateExpListBox()
         {
@@ -119,10 +153,6 @@ namespace LincolnTest
             {
                 expListBox.Items.Add(file.Name);
                 Debug.WriteLine(file.Name);
-            }
-            if (expListBox.Items.Count > 0)
-            {
-                // TODO: Maybe select the first item by default?
             }
         }
 
@@ -210,7 +240,7 @@ namespace LincolnTest
             stimWindow.trialInfo = myXML.getTrialInfo(trialListBox.Items[i].ToString());
 
             stimWindow.trialInfo.isPresented = true;
-            stimWindow.trialInfo.partDOB  = dateTimePicker1.Value.ToString();
+            stimWindow.trialInfo.partAge  = dateTimePicker1.Value.ToString();
             myXML.updateTrial(trialListBox.SelectedIndex, stimWindow.trialInfo);
 
             // Init the stim window and start it sending preview images back
@@ -224,14 +254,12 @@ namespace LincolnTest
 
             // Timer to update the preview image
             previewTimer = new System.Timers.Timer(60);
-            previewTimer.Elapsed += refreshPreview;
+            // previewTimer.Elapsed += refreshPreview;
             previewTimer.AutoReset = true;
             previewTimer.Enabled = true;
 
             // Start the cameras writing to video
-            startButton.Enabled = false;
-            camera.writing = true;
-            camera2.writing = true;
+            startButton.Enabled = false;;
         }
 
         // Update the experiment preview image
@@ -262,7 +290,7 @@ namespace LincolnTest
                 }
             }
         }
-        // Update the camera preview image
+        //Update the camera preview image
         private void cameraPreview(Object source, ElapsedEventArgs e)
         {
             if (this.InvokeRequired)
@@ -430,5 +458,13 @@ namespace LincolnTest
         {
 
         }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            TimeSpan diff = DateTime.Now.Subtract(dateTimePicker1.Value);
+            ageLabel.Text = diff.Days.ToString() + " days old";
+        }
     }
+
 }
+

@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Create));
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,9 +37,6 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkExperimentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkStimulusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expListBox = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.blockListBox = new System.Windows.Forms.ListBox();
@@ -51,7 +46,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.commentBox = new System.Windows.Forms.TextBox();
-            this.saveButton = new System.Windows.Forms.Button();
             this.addBlock = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -65,7 +59,7 @@
             this.colorDialog3 = new System.Windows.Forms.ColorDialog();
             this.colorDialog4 = new System.Windows.Forms.ColorDialog();
             this.removeBlockButton = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            this.duplicateBockButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lookResetBox = new System.Windows.Forms.NumericUpDown();
             this.lookedMin = new System.Windows.Forms.NumericUpDown();
@@ -97,7 +91,6 @@
             this.habitNPercentBox = new System.Windows.Forms.NumericUpDown();
             this.hcLooksBox = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
-            this.randOptButton = new System.Windows.Forms.Button();
             this.attnButton = new System.Windows.Forms.Button();
             this.trialListBox = new System.Windows.Forms.ListBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -119,13 +112,14 @@
             this.stimImageL = new System.Windows.Forms.PictureBox();
             this.vertImage = new System.Windows.Forms.PictureBox();
             this.horizImage = new System.Windows.Forms.PictureBox();
-            this.snapBox = new System.Windows.Forms.CheckBox();
             this.imageCollections = new System.Windows.Forms.ListBox();
             this.tabPanel = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.renameButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.shownTextLabel = new System.Windows.Forms.Label();
+            this.savedLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.visualOnsetBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.audioOnsetBox)).BeginInit();
@@ -151,36 +145,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.horizImage)).BeginInit();
             this.tabPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(685, 461);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Preview";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.previewButton_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(39, 508);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(59, 23);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Update";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.updateBlockButton_Click);
             // 
             // menuStrip1
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(6, 1, 0, 1);
@@ -238,27 +211,6 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
-            // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.checkExperimentToolStripMenuItem,
-            this.checkStimulusToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 22);
-            this.toolsToolStripMenuItem.Text = "&Tools";
-            // 
-            // checkExperimentToolStripMenuItem
-            // 
-            this.checkExperimentToolStripMenuItem.Name = "checkExperimentToolStripMenuItem";
-            this.checkExperimentToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.checkExperimentToolStripMenuItem.Text = "Check Experiment...";
-            // 
-            // checkStimulusToolStripMenuItem
-            // 
-            this.checkStimulusToolStripMenuItem.Name = "checkStimulusToolStripMenuItem";
-            this.checkStimulusToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.checkStimulusToolStripMenuItem.Text = "Check &Stimulus...";
             // 
             // expListBox
             // 
@@ -326,7 +278,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(561, 38);
+            this.label5.Location = new System.Drawing.Point(5, 27);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 13);
             this.label5.TabIndex = 11;
@@ -342,17 +294,6 @@
             this.commentBox.Text = "Gibber jabber";
             this.commentBox.TextChanged += new System.EventHandler(this.commentBox_TextChanged);
             // 
-            // saveButton
-            // 
-            this.saveButton.Enabled = false;
-            this.saveButton.Location = new System.Drawing.Point(39, 481);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(59, 23);
-            this.saveButton.TabIndex = 14;
-            this.saveButton.Text = "Save";
-            this.saveButton.UseVisualStyleBackColor = true;
-            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
-            // 
             // addBlock
             // 
             this.addBlock.Location = new System.Drawing.Point(12, 435);
@@ -367,7 +308,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(561, 65);
+            this.label6.Location = new System.Drawing.Point(5, 54);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(85, 13);
             this.label6.TabIndex = 17;
@@ -376,7 +317,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(561, 93);
+            this.label7.Location = new System.Drawing.Point(5, 82);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 19;
@@ -385,7 +326,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(561, 118);
+            this.label8.Location = new System.Drawing.Point(5, 107);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(97, 13);
             this.label8.TabIndex = 20;
@@ -393,7 +334,7 @@
             // 
             // visualOnsetBox
             // 
-            this.visualOnsetBox.Location = new System.Drawing.Point(690, 38);
+            this.visualOnsetBox.Location = new System.Drawing.Point(134, 27);
             this.visualOnsetBox.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.visualOnsetBox.Name = "visualOnsetBox";
             this.visualOnsetBox.Size = new System.Drawing.Size(56, 20);
@@ -402,7 +343,7 @@
             // 
             // audioOnsetBox
             // 
-            this.audioOnsetBox.Location = new System.Drawing.Point(690, 64);
+            this.audioOnsetBox.Location = new System.Drawing.Point(134, 53);
             this.audioOnsetBox.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.audioOnsetBox.Maximum = new decimal(new int[] {
             9000,
@@ -421,7 +362,7 @@
             // 
             // maxTrialDurBox
             // 
-            this.maxTrialDurBox.Location = new System.Drawing.Point(690, 88);
+            this.maxTrialDurBox.Location = new System.Drawing.Point(134, 77);
             this.maxTrialDurBox.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.maxTrialDurBox.Maximum = new decimal(new int[] {
             25000,
@@ -447,7 +388,7 @@
             // 
             this.colourButton.BackColor = System.Drawing.Color.DimGray;
             this.colourButton.ForeColor = System.Drawing.Color.Black;
-            this.colourButton.Location = new System.Drawing.Point(690, 113);
+            this.colourButton.Location = new System.Drawing.Point(134, 102);
             this.colourButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.colourButton.Name = "colourButton";
             this.colourButton.Size = new System.Drawing.Size(56, 23);
@@ -466,16 +407,16 @@
             this.removeBlockButton.UseVisualStyleBackColor = true;
             this.removeBlockButton.Click += new System.EventHandler(this.removeBlockButton_Click);
             // 
-            // button5
+            // duplicateBockButton
             // 
-            this.button5.Enabled = false;
-            this.button5.Location = new System.Drawing.Point(33, 456);
-            this.button5.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(69, 19);
-            this.button5.TabIndex = 26;
-            this.button5.Text = "Duplicate";
-            this.button5.UseVisualStyleBackColor = true;
+            this.duplicateBockButton.Location = new System.Drawing.Point(33, 456);
+            this.duplicateBockButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.duplicateBockButton.Name = "duplicateBockButton";
+            this.duplicateBockButton.Size = new System.Drawing.Size(69, 19);
+            this.duplicateBockButton.TabIndex = 26;
+            this.duplicateBockButton.Text = "Duplicate";
+            this.duplicateBockButton.UseVisualStyleBackColor = true;
+            this.duplicateBockButton.Click += new System.EventHandler(this.duplicateBlockButton_Click);
             // 
             // groupBox1
             // 
@@ -489,7 +430,7 @@
             this.groupBox1.Controls.Add(this.lookTrialExceedBox);
             this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Location = new System.Drawing.Point(16, 117);
+            this.groupBox1.Location = new System.Drawing.Point(143, 67);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -572,7 +513,7 @@
             this.radioButton2.Location = new System.Drawing.Point(5, 61);
             this.radioButton2.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(115, 17);
+            this.radioButton2.Size = new System.Drawing.Size(120, 17);
             this.radioButton2.TabIndex = 1;
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "Total looks exceeds";
@@ -599,7 +540,7 @@
             this.groupBox2.Controls.Add(this.radioButton6);
             this.groupBox2.Controls.Add(this.lookTrialExceedSelect);
             this.groupBox2.Controls.Add(this.radioButton4);
-            this.groupBox2.Location = new System.Drawing.Point(16, 321);
+            this.groupBox2.Location = new System.Drawing.Point(143, 271);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -645,7 +586,7 @@
             this.lookTrialExceedSelect.Location = new System.Drawing.Point(5, 44);
             this.lookTrialExceedSelect.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.lookTrialExceedSelect.Name = "lookTrialExceedSelect";
-            this.lookTrialExceedSelect.Size = new System.Drawing.Size(164, 17);
+            this.lookTrialExceedSelect.Size = new System.Drawing.Size(169, 17);
             this.lookTrialExceedSelect.TabIndex = 1;
             this.lookTrialExceedSelect.TabStop = true;
             this.lookTrialExceedSelect.Text = "Total looks for blocks exceeds";
@@ -669,7 +610,7 @@
             this.groupBox3.Controls.Add(this.showStimInfoBox);
             this.groupBox3.Controls.Add(this.showThumbsBox);
             this.groupBox3.Controls.Add(this.showAllBox);
-            this.groupBox3.Location = new System.Drawing.Point(260, 121);
+            this.groupBox3.Location = new System.Drawing.Point(387, 71);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -733,7 +674,7 @@
             this.groupBox4.Controls.Add(this.habitNPercentBox);
             this.groupBox4.Controls.Add(this.hcLooksBox);
             this.groupBox4.Controls.Add(this.label11);
-            this.groupBox4.Location = new System.Drawing.Point(260, 230);
+            this.groupBox4.Location = new System.Drawing.Point(387, 180);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -848,17 +789,6 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Average looks";
             // 
-            // randOptButton
-            // 
-            this.randOptButton.Location = new System.Drawing.Point(232, 11);
-            this.randOptButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.randOptButton.Name = "randOptButton";
-            this.randOptButton.Size = new System.Drawing.Size(136, 23);
-            this.randOptButton.TabIndex = 31;
-            this.randOptButton.Text = "Randomisation options";
-            this.randOptButton.UseVisualStyleBackColor = true;
-            this.randOptButton.Click += new System.EventHandler(this.randOptButton_Click);
-            // 
             // attnButton
             // 
             this.attnButton.Location = new System.Drawing.Point(610, 349);
@@ -937,9 +867,9 @@
             this.label17.Location = new System.Drawing.Point(5, 141);
             this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(77, 13);
+            this.label17.Size = new System.Drawing.Size(108, 13);
             this.label17.TabIndex = 47;
-            this.label17.Text = "Visual Stimulus";
+            this.label17.Text = "Stimulus Loading Bay";
             // 
             // stimDataGrid
             // 
@@ -1004,7 +934,7 @@
             // 
             // audioStimSide
             // 
-            this.audioStimSide.HeaderText = "Side";
+            this.audioStimSide.HeaderText = "Target";
             this.audioStimSide.MinimumWidth = 8;
             this.audioStimSide.Name = "audioStimSide";
             this.audioStimSide.Width = 150;
@@ -1030,11 +960,6 @@
             this.stimPanel.Name = "stimPanel";
             this.stimPanel.Size = new System.Drawing.Size(300, 133);
             this.stimPanel.TabIndex = 51;
-            this.stimPanel.DragLeave += new System.EventHandler(this.stimPanel_DragLeave);
-            this.stimPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.stimPanel_MouseDown);
-            this.stimPanel.MouseLeave += new System.EventHandler(this.stimPanel_MouseLeave);
-            this.stimPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.stimPanel_MouseMove);
-            this.stimPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.stimPanel_MouseUp);
             // 
             // stimImageR
             // 
@@ -1088,17 +1013,6 @@
             this.horizImage.Visible = false;
             this.horizImage.Click += new System.EventHandler(this.horizImage_Click);
             // 
-            // snapBox
-            // 
-            this.snapBox.AutoSize = true;
-            this.snapBox.Location = new System.Drawing.Point(479, 465);
-            this.snapBox.Name = "snapBox";
-            this.snapBox.Size = new System.Drawing.Size(94, 17);
-            this.snapBox.TabIndex = 55;
-            this.snapBox.Text = "Snap to points";
-            this.snapBox.UseVisualStyleBackColor = true;
-            this.snapBox.CheckedChanged += new System.EventHandler(this.snapBox_CheckedChanged);
-            // 
             // imageCollections
             // 
             this.imageCollections.FormattingEnabled = true;
@@ -1112,6 +1026,7 @@
             this.tabPanel.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tabPanel.Controls.Add(this.tabPage1);
             this.tabPanel.Controls.Add(this.tabPage2);
+            this.tabPanel.Enabled = false;
             this.tabPanel.Location = new System.Drawing.Point(148, 15);
             this.tabPanel.Name = "tabPanel";
             this.tabPanel.SelectedIndex = 0;
@@ -1121,29 +1036,20 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.groupBox5);
             this.tabPage1.Controls.Add(this.renameButton);
-            this.tabPage1.Controls.Add(this.label5);
-            this.tabPage1.Controls.Add(this.snapBox);
-            this.tabPage1.Controls.Add(this.label6);
             this.tabPage1.Controls.Add(this.stimPanel);
             this.tabPage1.Controls.Add(this.cbButton);
-            this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.stimDataGrid);
-            this.tabPage1.Controls.Add(this.label8);
             this.tabPage1.Controls.Add(this.imageCollections);
             this.tabPage1.Controls.Add(this.label17);
-            this.tabPage1.Controls.Add(this.visualOnsetBox);
             this.tabPage1.Controls.Add(this.attnButton);
-            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.trialListBox);
             this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.audioOnsetBox);
             this.tabPage1.Controls.Add(this.titleBox);
             this.tabPage1.Controls.Add(this.trialTitleBox);
-            this.tabPage1.Controls.Add(this.maxTrialDurBox);
             this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Controls.Add(this.label13);
-            this.tabPage1.Controls.Add(this.colourButton);
             this.tabPage1.Controls.Add(this.commentBox);
             this.tabPage1.Controls.Add(this.delTrialButton);
             this.tabPage1.Controls.Add(this.label12);
@@ -1154,6 +1060,23 @@
             this.tabPage1.Size = new System.Drawing.Size(762, 495);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Block";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label7);
+            this.groupBox5.Controls.Add(this.colourButton);
+            this.groupBox5.Controls.Add(this.label5);
+            this.groupBox5.Controls.Add(this.maxTrialDurBox);
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.audioOnsetBox);
+            this.groupBox5.Controls.Add(this.visualOnsetBox);
+            this.groupBox5.Controls.Add(this.label8);
+            this.groupBox5.Location = new System.Drawing.Point(556, 8);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(200, 143);
+            this.groupBox5.TabIndex = 60;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Settings";
             // 
             // renameButton
             // 
@@ -1172,7 +1095,6 @@
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox3);
             this.tabPage2.Controls.Add(this.groupBox4);
-            this.tabPage2.Controls.Add(this.randOptButton);
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -1192,22 +1114,31 @@
             this.shownTextLabel.Text = "Not Presented";
             this.shownTextLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // savedLabel
+            // 
+            this.savedLabel.AutoSize = true;
+            this.savedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.savedLabel.Location = new System.Drawing.Point(776, 548);
+            this.savedLabel.Name = "savedLabel";
+            this.savedLabel.Size = new System.Drawing.Size(63, 24);
+            this.savedLabel.TabIndex = 53;
+            this.savedLabel.Text = "Saved";
+            // 
             // Create
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(934, 581);
+            this.Controls.Add(this.savedLabel);
             this.Controls.Add(this.shownTextLabel);
             this.Controls.Add(this.tabPanel);
-            this.Controls.Add(this.button5);
+            this.Controls.Add(this.duplicateBockButton);
             this.Controls.Add(this.removeBlockButton);
             this.Controls.Add(this.addBlock);
-            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.blockListBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.expListBox);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1250,6 +1181,8 @@
             this.tabPanel.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1257,9 +1190,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
@@ -1268,9 +1198,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem checkExperimentToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem checkStimulusToolStripMenuItem;
         private System.Windows.Forms.ListBox expListBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ListBox blockListBox;
@@ -1280,7 +1207,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox commentBox;
-        private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button addBlock;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
@@ -1294,7 +1220,7 @@
         private System.Windows.Forms.ColorDialog colorDialog3;
         private System.Windows.Forms.ColorDialog colorDialog4;
         private System.Windows.Forms.Button removeBlockButton;
-        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button duplicateBockButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
@@ -1314,7 +1240,6 @@
         private System.Windows.Forms.CheckBox showAllBox;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button randOptButton;
         private System.Windows.Forms.Button attnButton;
         private System.Windows.Forms.ListBox trialListBox;
         private System.Windows.Forms.Label label12;
@@ -1340,7 +1265,6 @@
         private System.Windows.Forms.PictureBox stimImageL;
         private System.Windows.Forms.PictureBox horizImage;
         private System.Windows.Forms.PictureBox vertImage;
-        private System.Windows.Forms.CheckBox snapBox;
         private System.Windows.Forms.Button cbButton;
         private System.Windows.Forms.PictureBox stimImageR;
         private System.Windows.Forms.DataGridView stimDataGrid;
@@ -1348,13 +1272,15 @@
         private System.Windows.Forms.TabControl tabPanel;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Button renameButton;
+        private System.Windows.Forms.Label shownTextLabel;
+        private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.DataGridViewTextBoxColumn number;
         private System.Windows.Forms.DataGridViewComboBoxColumn LeftImage;
         private System.Windows.Forms.DataGridViewComboBoxColumn RightImage;
         private System.Windows.Forms.DataGridViewComboBoxColumn audioStim;
         private System.Windows.Forms.DataGridViewComboBoxColumn audioStimSide;
-        private System.Windows.Forms.Button renameButton;
-        private System.Windows.Forms.Label shownTextLabel;
+        private System.Windows.Forms.Label savedLabel;
     }
 }
 

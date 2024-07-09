@@ -40,12 +40,8 @@ namespace LincolnTest
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newProjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addToExistingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.keySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hardwareSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startButton = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -66,6 +62,7 @@ namespace LincolnTest
             this.trialListBox = new System.Windows.Forms.ListBox();
             this.expListBox = new System.Windows.Forms.ListBox();
             this.shuffleCheckBox = new System.Windows.Forms.CheckBox();
+            this.ageLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -76,6 +73,7 @@ namespace LincolnTest
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.ageLabel);
             this.groupBox1.Controls.Add(this.dateTimePicker1);
             this.groupBox1.Controls.Add(this.GOther);
             this.groupBox1.Controls.Add(this.GFemale);
@@ -96,11 +94,12 @@ namespace LincolnTest
             this.dateTimePicker1.Size = new System.Drawing.Size(133, 20);
             this.dateTimePicker1.TabIndex = 10;
             this.dateTimePicker1.Value = new System.DateTime(2021, 1, 1, 0, 0, 0, 0);
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // GOther
             // 
             this.GOther.AutoSize = true;
-            this.GOther.Location = new System.Drawing.Point(84, 135);
+            this.GOther.Location = new System.Drawing.Point(84, 176);
             this.GOther.Name = "GOther";
             this.GOther.Size = new System.Drawing.Size(51, 17);
             this.GOther.TabIndex = 6;
@@ -111,7 +110,7 @@ namespace LincolnTest
             // GFemale
             // 
             this.GFemale.AutoSize = true;
-            this.GFemale.Location = new System.Drawing.Point(84, 112);
+            this.GFemale.Location = new System.Drawing.Point(84, 153);
             this.GFemale.Name = "GFemale";
             this.GFemale.Size = new System.Drawing.Size(59, 17);
             this.GFemale.TabIndex = 5;
@@ -122,7 +121,7 @@ namespace LincolnTest
             // GMale
             // 
             this.GMale.AutoSize = true;
-            this.GMale.Location = new System.Drawing.Point(84, 89);
+            this.GMale.Location = new System.Drawing.Point(84, 130);
             this.GMale.Name = "GMale";
             this.GMale.Size = new System.Drawing.Size(48, 17);
             this.GMale.TabIndex = 4;
@@ -133,7 +132,7 @@ namespace LincolnTest
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 89);
+            this.label3.Location = new System.Drawing.Point(20, 130);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(42, 13);
             this.label3.TabIndex = 3;
@@ -168,7 +167,6 @@ namespace LincolnTest
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.projectToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -177,34 +175,10 @@ namespace LincolnTest
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // projectToolStripMenuItem
-            // 
-            this.projectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newProjectMenuItem,
-            this.addToExistingMenuItem});
-            this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
-            this.projectToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
-            this.projectToolStripMenuItem.Text = "Project";
-            // 
-            // newProjectMenuItem
-            // 
-            this.newProjectMenuItem.Name = "newProjectMenuItem";
-            this.newProjectMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.newProjectMenuItem.Text = "New Project...";
-            this.newProjectMenuItem.Click += new System.EventHandler(this.newProjectMenuItem_Click);
-            // 
-            // addToExistingMenuItem
-            // 
-            this.addToExistingMenuItem.Name = "addToExistingMenuItem";
-            this.addToExistingMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.addToExistingMenuItem.Text = "Add to existing project";
-            this.addToExistingMenuItem.Click += new System.EventHandler(this.addToExistingMenuItem_Click);
-            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.keySettingsToolStripMenuItem,
-            this.hardwareSettingsToolStripMenuItem,
             this.viewSettingsToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 22);
@@ -213,20 +187,14 @@ namespace LincolnTest
             // keySettingsToolStripMenuItem
             // 
             this.keySettingsToolStripMenuItem.Name = "keySettingsToolStripMenuItem";
-            this.keySettingsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.keySettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.keySettingsToolStripMenuItem.Text = "Keyboard settings";
             this.keySettingsToolStripMenuItem.Click += new System.EventHandler(this.keySettingsToolStripMenuItem_Click);
-            // 
-            // hardwareSettingsToolStripMenuItem
-            // 
-            this.hardwareSettingsToolStripMenuItem.Name = "hardwareSettingsToolStripMenuItem";
-            this.hardwareSettingsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.hardwareSettingsToolStripMenuItem.Text = "Hardware settings";
             // 
             // viewSettingsToolStripMenuItem
             // 
             this.viewSettingsToolStripMenuItem.Name = "viewSettingsToolStripMenuItem";
-            this.viewSettingsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.viewSettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.viewSettingsToolStripMenuItem.Text = "View settings";
             this.viewSettingsToolStripMenuItem.Click += new System.EventHandler(this.viewSettingsToolStripMenuItem_Click);
             // 
@@ -429,6 +397,15 @@ namespace LincolnTest
             this.shuffleCheckBox.UseVisualStyleBackColor = true;
             this.shuffleCheckBox.CheckedChanged += new System.EventHandler(this.shuffleCheckBox_CheckedChanged);
             // 
+            // ageLabel
+            // 
+            this.ageLabel.AutoSize = true;
+            this.ageLabel.Location = new System.Drawing.Point(23, 80);
+            this.ageLabel.Name = "ageLabel";
+            this.ageLabel.Size = new System.Drawing.Size(35, 13);
+            this.ageLabel.TabIndex = 11;
+            this.ageLabel.Text = "label7";
+            // 
             // Present
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -488,7 +465,6 @@ namespace LincolnTest
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem keySettingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem hardwareSettingsToolStripMenuItem;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label4;
@@ -496,9 +472,6 @@ namespace LincolnTest
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.ToolStripMenuItem viewSettingsToolStripMenuItem;
         private System.Windows.Forms.TextBox keyTextBox;
-        private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newProjectMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addToExistingMenuItem;
         private System.Windows.Forms.PictureBox StimWinPreview;
         private System.Windows.Forms.CheckBox autoRunCheckBox;
         private System.Windows.Forms.PictureBox cameraImageBox1;
@@ -513,5 +486,6 @@ namespace LincolnTest
         private System.Windows.Forms.ListBox trialListBox;
         private System.Windows.Forms.ListBox expListBox;
         private System.Windows.Forms.CheckBox shuffleCheckBox;
+        private System.Windows.Forms.Label ageLabel;
     }
 }

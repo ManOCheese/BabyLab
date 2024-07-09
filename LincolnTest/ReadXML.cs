@@ -51,7 +51,7 @@ namespace LincolnTest
     {
         public string filePath { get; set; }
         public string partCode { get; set; }
-        public string partDOB { get; set; }
+        public string partAge { get; set; }
         public string partGender { get; set; }
         public string audioStimulus { get; set; }
         public string audioStimulusSide { get; set; }
@@ -177,7 +177,7 @@ namespace LincolnTest
             XmlElement element;
             XmlText text;
 
-            string[,] nodes = new string[,] { { "Block", blockInfo.blockName}, {"partCode", trialName}, {"TrialsEnd", "00" }, {"isScored", "false" }, {"isPresented", "false" }, {"partDOB", "1-1-1" }, {"partGender", "Other" } };
+            string[,] nodes = new string[,] { { "Block", blockInfo.blockName}, {"partCode", trialName}, {"TrialsEnd", "00" }, {"isScored", "false" }, {"isPresented", "false" }, {"partAge", "1-1-1" }, {"partGender", "Other" } };
 
             for (int i = 0; i < nodes.GetLength(0); i++)
             {
@@ -213,7 +213,7 @@ namespace LincolnTest
             //element6.AppendChild(text6);
             //element1.AppendChild(element6);
 
-            //XmlElement element7 = doc.CreateElement(string.Empty, "partDOB", string.Empty);
+            //XmlElement element7 = doc.CreateElement(string.Empty, "partAge", string.Empty);
             //XmlText text7 = doc.CreateTextNode("na");
             //element7.AppendChild(text7);
             //element1.AppendChild(element7);
@@ -307,7 +307,7 @@ namespace LincolnTest
             trialElement["partCode"].InnerText = trialInfo.partCode;
             trialElement["isScored"].InnerText = trialInfo.isScored.ToString().ToLower();
             trialElement["isPresented"].InnerText = trialInfo.isPresented.ToString().ToLower();
-            trialElement["partDOB"].InnerText = trialInfo.partDOB.ToString().ToLower();
+            trialElement["partAge"].InnerText = trialInfo.partAge.ToString().ToLower();
             trialElement["partGender"].InnerText = trialInfo.partGender.ToString().ToLower();
 
             if (trialInfo.stimulusList != "")
@@ -409,8 +409,9 @@ namespace LincolnTest
 
 
         // Delete a block
-        public void deleteBlock(XmlNode block)
+        public void deleteBlock(int blockNum)
         {
+            XmlNode block = blocksRead[blockNum];
             XmlNode prevNode = block.PreviousSibling;
 
             block.OwnerDocument.DocumentElement.RemoveChild(block);
@@ -433,6 +434,32 @@ namespace LincolnTest
 
             doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
 
+        }
+
+        public void duplicateBlock(int block, string blockName)
+        {
+            // Create a new node with the name of your new server
+            XmlNode newNode = doc.CreateElement("Block");
+
+            // set the inner xml of a new node to inner xml of original node
+            newNode.InnerXml = blocksRead[block].InnerXml;
+
+            newNode["blockName"].InnerXml = blockName;
+
+
+            XmlNodeList trials = newNode.SelectNodes("descendant::TrialSet[Block='Block1']");
+
+            Debug.WriteLine("Getting trials for block: " + "NewBlock" + "  and have found " + trials.Count + " trials.");
+
+            foreach(XmlNode trial in trials)
+            {
+                trial["Block"].InnerText = blockName;
+                Debug.WriteLine("Updating trial...");
+            }
+
+            // append new node to DocumentElement, not XmlDocument
+            doc.DocumentElement.AppendChild(newNode);
+            doc.Save(Properties.Settings.Default.ExpPath + @"\" + currFileName);
         }
 
         // Load a file and return a list of blocks: Used to update lists in various windows
@@ -534,7 +561,7 @@ namespace LincolnTest
 
             trialInfo.isPresented = selectedTrial["isPresented"].InnerText == "true";
             trialInfo.isScored = selectedTrial["isScored"].InnerText == "true";
-            trialInfo.partDOB = selectedTrial["partDOB"].InnerText;
+            trialInfo.partAge = selectedTrial["partAge"].InnerText;
             trialInfo.partGender = selectedTrial["partGender"].InnerText;
 
             return trialInfo;

@@ -124,11 +124,6 @@ namespace LincolnTest
             newForm.Show();
         }
 
-        // Manually save all changes
-        private void updateBlockButton_Click(object sender, EventArgs e)
-        {
-            SaveChanges();
-        }
         // Save changes to XML
         private void SaveChanges()
         {
@@ -455,6 +450,7 @@ namespace LincolnTest
 
         public void setSelectedBlockNode()
         {
+            // selectedBlock = myXML.
 
         }
 
@@ -690,7 +686,7 @@ namespace LincolnTest
 
         private void removeBlockButton_Click(object sender, EventArgs e)
         {
-            myXML.deleteBlock(selectedBlock);
+            myXML.deleteBlock(blockListBox.SelectedIndex);
             refreshBlockList();
         }
 
@@ -839,101 +835,6 @@ namespace LincolnTest
             }
         }
 
-        // Use mouse to move images TODO: remove this
-        private void stimPanel_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (mousePrevDown)
-            {
-                //stimPosLabel.Text = e.X.ToString() + " : " + e.Y.ToString();
-
-                int mouseX = e.X;
-                int mouseY = e.Y;
-
-                int maxX = stimPanel.Width - stimImageL.Width;
-                int maxY = stimPanel.Height - stimImageL.Height;
-                int midX = (stimPanel.Width / 2) - (stimImageL.Width / 2);
-                int midY = (stimPanel.Height / 2) - (stimImageL.Height / 2);
-
-                if (snapBox.Checked)
-                {
-                    snapSize = 15;
-                }
-                else
-                {
-                    snapSize = 0;
-                }
-
-
-                if (e.X < snapSize)
-                {
-                    mouseX = 0;
-                }
-                if (e.Y < snapSize)
-                {
-                    mouseY = 0;
-                }
-                if (e.X >= maxX - snapSize)
-                {
-                    mouseX = maxX;
-                }
-                if (e.Y >= maxY - snapSize)
-                {
-                    mouseY = maxY;
-                }
-
-                if (e.X >= midX - snapSize && e.X <= midX + snapSize)
-                {
-                    mouseX = midX;
-                    //vertImage.Visible = true;
-                }
-                else
-                {
-                    //vertImage.Visible = false;
-                }
-                if (e.Y >= midY - snapSize && e.Y <= midY + snapSize)
-                {
-                    mouseY = midY;
-                    // horizImage.Visible = true;
-                }
-                else
-                {
-                    //horizImage.Visible = false;
-                }
-
-                stimImageL.Location = new Point(mouseX, mouseY);
-                updateStimPosList();
-            }
-
-        }
-
-        private void updateStimPosList()
-        {
-
-        }
-
-        private void stimPanel_MouseDown(object sender, MouseEventArgs e)
-        {
-            mousePrevDown = true;
-        }
-
-        private void stimPanel_MouseUp(object sender, MouseEventArgs e)
-        {
-            mousePrevDown = false;
-        }
-
-
-
-        private void stimPanel_MouseLeave(object sender, EventArgs e)
-        {
-            mousePrevDown = false;
-
-        }
-
-        private void stimPanel_DragLeave(object sender, EventArgs e)
-        {
-            mousePrevDown = false;
-        }
-
         private void horizImage_Click(object sender, EventArgs e)
         {
 
@@ -944,20 +845,12 @@ namespace LincolnTest
 
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void snapBox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void Create_Load(object sender, EventArgs e)
         {
 
         }
+
         // Save on close
         private void Create_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -1049,8 +942,6 @@ namespace LincolnTest
 
         private void stimDataGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            Debug.WriteLine("Changed");
-           
             updateStimList();
             SaveChanges();
             updateImagePreviewEvent(e);
@@ -1059,7 +950,6 @@ namespace LincolnTest
         private void stimDataGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             updateImagePreviewEvent(e);
-
             mySettings.hasChanged = false;
         }
 
@@ -1083,7 +973,7 @@ namespace LincolnTest
             // Balance 1 - Swap Stims and Side
 
             CBTrialInfo.partCode = trialInfo.partCode + "_StimSide";
-            CBTrialInfo.partDOB = trialInfo.partDOB;
+            CBTrialInfo.partAge = trialInfo.partAge;
             CBTrialInfo.partGender = trialInfo.partGender;
             CBTrialInfo.stimulusList = string.Join(",", tempStimsR);
             CBTrialInfo.stimulusListRight = string.Join(",", tempStimsL);
@@ -1186,9 +1076,6 @@ namespace LincolnTest
             return t;
         }
 
-
-
-
         private void stimDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -1207,22 +1094,6 @@ namespace LincolnTest
 
         }
 
-        private void stimDataGrid_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-        {
-            var grid = sender as DataGridView;
-            var rowIdx = (e.RowIndex + 1).ToString();
-
-            var centerFormat = new StringFormat()
-            {
-                // right alignment might actually make more sense for numbers
-                Alignment = StringAlignment.Center,
-                LineAlignment = StringAlignment.Center
-            };
-
-            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
-            e.Graphics.DrawString(rowIdx, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
-        }
-
         private void delTrialButton_Click(object sender, EventArgs e)
         {
             // Remove selected Trial
@@ -1235,6 +1106,16 @@ namespace LincolnTest
             trialInfo.partCode = trialTitleBox.Text;
             myXML.updateTrial(trialListBox.SelectedIndex, trialInfo);
             refresh_trialListBox();
+        }
+
+        private void duplicateBlockButton_Click(object sender, EventArgs e)
+        {
+            NewBlockTextInput textInput = new NewBlockTextInput();
+            if (textInput.ShowDialog() == DialogResult.OK)
+            {
+                myXML.duplicateBlock(blockindex, textInput.Text.Split('.')[0]);
+            }
+            refreshBlockList();
         }
     }
 
